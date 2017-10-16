@@ -11,8 +11,8 @@ const residentSchema = new Schema({
   name: String,
   email: String,
   password: String,
-  polls: [{ type: Schema.Types.ObjectId, ref: 'Polls' }],
   estateName: String,
+  polls: [{ type: Schema.Types.ObjectId, ref: 'Polls' }],
   unit: String,
   block: String
 });
@@ -25,21 +25,21 @@ const estateSchema = new Schema({
   chairmanName: String,
   currentPolls: [{ type: Schema.Types.ObjectId, ref: 'Poll' }],
   pastPolls: [{ type: Schema.Types.ObjectId, ref: 'Poll' }],
-  ivniteCode : String
+  ivniteCode : String,
+  offset: Array
 });
 
 const pollsSchema = new Schema({
-  projectName: String,
-  pollName: String,
-  summary: String,
-  fileLinks: Array,
-  estateName: String,
-  options: Array,
-  startTime: Date,
-  endTime: Date,
-  active: Boolean,
-  voted: [{type: Schema.Types.ObjectId, ref: 'Resident'}],
-  votes: Array,
+    projectName: String,
+    pollName: String,
+    summary: String,
+    fileLinks: Array,
+    estateName: String,
+    options: Array,
+    endTime: String,
+    active: Boolean,
+    voted: [{type: Schema.Types.ObjectId, ref: 'Resident'}],
+    votes: Array
 });
 
 residentSchema.pre('save', function(next){

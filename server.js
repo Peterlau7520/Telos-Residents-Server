@@ -14,6 +14,8 @@ AWS.config.loadFromPath('./key.json');
 const s3 = new AWS.S3();
 const fs = require("fs");
 const s3Bucket = new AWS.S3( { params: {Bucket: 'telospdf'} } )
+var cors = require('cors');
+app.use(cors());
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -36,15 +38,26 @@ function setUserInfo(request){
 
 
 app.post('/register', (req, res) => {
+  console.log("reached route register", req.body);
   var invite = req.body.inviteCode;
   Estate.findOne({'estateName': req.body.estateName}, function(err, estate){
-    if(err)res.send('error');
-    if(!estate)res.status(422).send({error: 'Invalid estate name'});
+    if(err){
+      console.log("1");
+      res.json({success : false, message: "Network Error"});
+    }
+    if(!estate){
+      console.log("2");
+      
+      res.json({success : false , message: "Invalid Estate Name"});
+    }
     else{
-      base = invite.substring(0, estate.offset[0]);
+      console.log("3", estate, estate["pastPolls"] );
+      
+      //base = invite.substring(0, estate.offset[0]);
       block = invite.substring(estate.offset[0], estate.offset[0] + 2);
       unit = invite.substring(estate.offset[0] + 2);
-      //if(base !== estate.inviteCode)res.status(422).send({error: 'Invalid invite code'});
+      console.log(block, unit );
+
       Resident.findOne({
         'estateName' : req.body.estateName,
         'unit' : unit,
@@ -52,7 +65,7 @@ app.post('/register', (req, res) => {
       })
       .then(resident => {
         if(resident){
-          res.status(422).send({error: 'That unit address has an account'});
+          res.json({success : false ,  message : "Your unit is already registered."});
         }else{
           user = new Resident({
             name: req.body.name,
@@ -64,7 +77,9 @@ app.post('/register', (req, res) => {
           });
           user.save(function(err, user){
             var userInfo = setUserInfo(user);
-            res.status(201).json({
+            console.log("reached here", userInfo)
+            res.json({
+              success: true,
               token: 'JWT ' + generateToken(userInfo),
               user: userInfo
             })
@@ -79,35 +94,56 @@ app.post('/register', (req, res) => {
 })
 
 app.post('/login', (req, res) => {
+    console.log("reached here", req.body);
     Resident.findOne({'email' : req.body.email}, function(err, user){
-      if(err)res.status(422).send({error: 'Login Failed. Try again.'});
-      if(!user)res.status(422).send({error: 'Login Failed. Try again.'});
-      user.comparePassword(req.body.password, function(err, isMatch){
-        if(!isMatch){
-          res.status(422).send({error: 'Login Failed. Try again.'});
-        }else{
-          var userInfo = setUserInfo(user);
-          res.status(200).json({
-            token: 'JWT ' + generateToken(userInfo),
-            user: userInfo
-          });
-        }
-     })
+      if(err){
+        console.log('1');
+        res.json({success : false, message: "Network Error"});
+      }
+      if(!user){
+        console.log('2');
+        res.json({
+          success : false, 
+          message : "User not found"
+        });
+        // res.status(404).send({error: 'Login Failed. Try again.'});
+      }
+      else{
+        console.log('3');
+        
+        user.comparePassword(req.body.password, function(err, isMatch){
+          if(!isMatch){
+            res.json({success : false, message: "incorrect password"});
+          }else{
+            var userInfo = setUserInfo(user);
+            res.json({
+              success : true,
+              // token: 'JWT ' + generateToken(userInfo),
+              token:generateToken(userInfo),
+              user: userInfo
+            });
+          }
+       })
+      }
    })
 })
 
 app.use(function(req, res, next) {
   // check header or url parameters or post parameters for token
-  console.log('in');
   console.log(req.headers);
   var token = req.headers['authorization'];
-  if (!token) return next(); //if no token, continue
-
-  token = token.replace('Bearer ', '');
-
-  jwt.verify(token, process.env.JWT_SECRET, function(err, user) {
+  console.log(token);
+  if (!token){
+    console.log("token failiure");
+    res.json({
+      success : false,
+      message : "Invalid login"
+    })
+  } 
+  // token = token.replace('Bearer ', '');
+  jwt.verify(token, 'telosresidentserver', function(err, user) {
     if (err) {
-      return res.status(401).json({
+      res.json({
         success: false,
         message: 'Please register Log in using a valid email to submit posts'
       });
@@ -120,6 +156,7 @@ app.use(function(req, res, next) {
 
 
 app.get('/getPolls', (req, res) => {
+  // console.log('innnnnn')
   Estate.findOne({'estateName': req.user.estateName})
   .populate('currentPolls')
   .exec(function(err, estate){
@@ -131,7 +168,9 @@ app.get('/getPolls', (req, res) => {
       }
     }
     estate.save();
-    res.status(200).json({
+    // console.log(polls);
+    res.json({
+      success: true,
       estateName: req.user.estateName,
       polls: polls
     });
@@ -139,19 +178,24 @@ app.get('/getPolls', (req, res) => {
 })
 
 app.get('/viewpoll', (req, res) => {
+  console.log("whats up");
   var id = req.query.id;
+  console.log(id);
   var promiseArray = []
   Poll.findById(id, function(err, poll){
-    for(var i =0 ;i < poll.fileLinks; i++){
-      var folder = `${req.user.estateName}/${poll.projectName}`
+    console.log(poll);
+    for(var i =0 ;i < poll.fileLinks.length; i++){
+      console.log(req.user.estateName, poll.projectName, poll.fileLinks[i])
+      var folder = `${req.user.estateName}/${poll.projectName}`;
+      console.log("folder", folder);
       var urlPar = {Bucket: 'telospdf', Key: `${folder}/${poll.fileLinks[i]}`};
       var urlPromise = s3Bucket.getSignedUrl('getObject', urlPar);
       promiseArray.push(urlPromise);
     }
-    Promise.all(tempArray)
+    Promise.all(promiseArray)
     .then(function(responses){
       console.log(responses);
-      res.status(200).json({
+      res.json({
         poll : poll,
         links : responses
       });
@@ -163,19 +207,36 @@ app.get('/viewpoll', (req, res) => {
   })
 })
 
+// /vote?id={poll.id}&choice={choice}
+
 app.post('/vote', (req, res) => {
-  var id = req.query.id;
-  var choice = req.body.choice;
-  Poll.findById(id, function(err, poll){
-    if(poll.voted.indexOf(req.user.id) !== -1 ){
-      res.send('you have already voted')
+  console.log("reached vote");
+  var pollId = req.query.id;
+  var userId = req.user._id;
+  var choice = req.query.choice;
+  console.log(pollId, choice);
+  Poll.findById(pollId, function(err, poll){
+    console.log(poll, userId);
+    if(poll.voted.indexOf(userId) !== -1 ){
+      res.json({
+        success: false,
+        message: "You have already voted"
+      })
     }
     else{
-      poll.votes.push(option)
+      poll.votes.push(choice);
+      Resident.findById(userId, function(err, user){
+        console.log(user);
+        poll.voted.push(user);
+        poll.save(function(err, poll){
+          res.json({
+            success: true,
+            message: "Thanks for your vote."
+          })
+        })
+      })
     }
-    poll.save(function(err, poll){
-      res.send("Thanks for voting, your vote has been recorded");
-    })
+   
   })
 })
 
