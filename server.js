@@ -225,15 +225,12 @@ app.post('/vote', (req, res) => {
     }
     else{
       poll.votes.push(choice);
-      Resident.findById(userId, function(err, user){
-        console.log(user);
-        poll.voted.push(user);
-        poll.save(function(err, poll){
+      poll.voted.push(userId);
+      poll.save(function(err, poll){
           res.json({
             success: true,
             message: "Thanks for your vote."
-          })
-        })
+          });
       })
     }
    
