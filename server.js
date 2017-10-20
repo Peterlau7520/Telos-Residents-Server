@@ -10,8 +10,10 @@ const Poll = models.Poll;
 
 
 const AWS = require('aws-sdk');
-AWS.config.loadFromPath('./key.json');
-const s3 = new AWS.S3();
+let s3 = new AWS.S3({
+  accessKeyId: process.env.S3_KEY,
+  secretAccessKey: process.env.S3_SECRET
+});
 const fs = require("fs");
 const s3Bucket = new AWS.S3( { params: {Bucket: 'telospdf'} } )
 var cors = require('cors');
