@@ -228,6 +228,10 @@ app.post('/vote', (req, res) => {
     else{
       poll.votes.push(choice);
       poll.voted.push(userId);
+      poll.results.push({
+        name: req.user.name,
+        choice: choice
+      })
       poll.save(function(err, poll){
           res.json({
             success: true,

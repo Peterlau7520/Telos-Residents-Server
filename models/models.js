@@ -31,14 +31,18 @@ const estateSchema = new Schema({
 
 const pollsSchema = new Schema({
     projectName: String,
+    projectNameChn: String, 
     pollName: String,
+    pollNameChn: String,
     summary: String,
+    summaryChn: String,
     fileLinks: Array,
     estateName: String,
     options: Array,
     endTime: String,
     active: Boolean,
     voted: [{type: Schema.Types.ObjectId, ref: 'Resident'}],
+    results: [{choice: String, name: String}],
     votes: Array
 });
 
