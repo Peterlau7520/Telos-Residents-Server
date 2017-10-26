@@ -69,6 +69,7 @@ app.post('/register', (req, res) => {
         if(resident){
           res.json({success : false ,  message : "Your unit is already registered."});
         }else{
+          console.log("Req.body in register", req.body);
           user = new Resident({
             name: req.body.name,
             email: req.body.email,
