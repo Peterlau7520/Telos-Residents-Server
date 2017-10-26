@@ -228,6 +228,8 @@ app.post('/vote', (req, res) => {
     else{
       poll.votes.push(choice);
       poll.voted.push(userId);
+      console.log("Req.body", req.body);
+      console.log("Req.user", req.user);
       poll.results.push({
         name: req.user.name,
         choice: choice
