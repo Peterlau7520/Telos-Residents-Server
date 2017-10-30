@@ -32,6 +32,7 @@ function generateToken(user){
 function setUserInfo(request){
   return {
     _id: request._id,
+    name: request.name,
     email: request.email,
     estateName: request.estateName,
     unit: request.unit
