@@ -56,6 +56,7 @@ app.post('/register', (req, res) => {
   var invite = decrypt(req.body.inviteCode);
   console.log(invite);
   Estate.findOne({'estateName': req.body.estateName}, function(err, estate){
+    console.log(estate);
     if(err){
       console.log("1");
       res.json({success : false, message: "Network Error"});
@@ -220,7 +221,6 @@ app.get('/viewpoll', (req, res) => {
 
   })
 })
-
 
 
 app.post('/vote', (req, res) => {
