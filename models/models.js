@@ -26,7 +26,6 @@ const estateSchema = new Schema({
   currentPolls: [{ type: Schema.Types.ObjectId, ref: 'Poll' }],
   pastPolls: [{ type: Schema.Types.ObjectId, ref: 'Poll' }],
   ivniteCode : String,
-  offset: Array
 });
 
 const pollsSchema = new Schema({

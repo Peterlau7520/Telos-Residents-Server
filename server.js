@@ -7,6 +7,17 @@ const models = require('./models/models');
 const Estate = models.Estate;
 const Resident = models.Resident;
 const Poll = models.Poll;
+var crypto = require('crypto'),
+    algorithm = 'aes-256-ctr',
+    password = 'telosppj123';
+
+
+function decrypt(text){
+  var decipher = crypto.createDecipher(algorithm,password)
+  var dec = decipher.update(text,'hex','utf8')
+  dec += decipher.final('utf8');
+  return dec;
+}
 
 
 const AWS = require('aws-sdk');
@@ -41,7 +52,8 @@ function setUserInfo(request){
 
 app.post('/register', (req, res) => {
   console.log("reached route register", req.body);
-  var invite = req.body.inviteCode;
+  var invite = decrypt(req.body.inviteCode);
+  console.log(invite);
   Estate.findOne({'estateName': req.body.estateName}, function(err, estate){
     if(err){
       console.log("1");
@@ -49,21 +61,19 @@ app.post('/register', (req, res) => {
     }
     if(!estate){
       console.log("2");
-      
       res.json({success : false , message: "Invalid Estate Name"});
     }
+    if(estate.inviteCode.indexOf(invite) == -1){
+      console.log(invite, estate.inviteCode);
+      res.json({success : false , message: "Invalid Invite Code"});
+    }
     else{
-      console.log("3", estate, estate["pastPolls"] );
-      
-      //base = invite.substring(0, estate.offset[0]);
-      block = invite.substring(estate.offset[0], estate.offset[0] + 2);
-      unit = invite.substring(estate.offset[0] + 2);
-      console.log(block, unit );
+      console.log("3", estate);
 
       Resident.findOne({
         'estateName' : req.body.estateName,
-        'unit' : unit,
-        'block' : block
+        'unit' : req.body.unit,
+        'block' : req.body.block
       })
       .then(resident => {
         if(resident){
@@ -105,14 +115,14 @@ app.post('/login', (req, res) => {
       if(!user){
         console.log('2');
         res.json({
-          success : false, 
+          success : false,
           message : "User not found"
         });
         // res.status(404).send({error: 'Login Failed. Try again.'});
       }
       else{
         console.log('3');
-        
+
         user.comparePassword(req.body.password, function(err, isMatch){
           if(!isMatch){
             res.json({success : false, message: "incorrect password"});
@@ -141,7 +151,7 @@ app.use(function(req, res, next) {
       success : false,
       message : "Invalid login"
     })
-  } 
+  }
   // token = token.replace('Bearer ', '');
   jwt.verify(token, 'telosresidentserver', function(err, user) {
     if (err) {
@@ -235,7 +245,7 @@ app.post('/vote', (req, res) => {
           });
       })
     }
-   
+
   })
 })
 
