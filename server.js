@@ -221,7 +221,7 @@ app.get('/viewpoll', (req, res) => {
   })
 })
 
-// /vote?id={poll.id}&choice={choice}
+
 
 app.post('/vote', (req, res) => {
   console.log("reached vote");
