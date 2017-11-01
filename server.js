@@ -56,7 +56,7 @@ app.post('/register', (req, res) => {
   var invite = decrypt(req.body.inviteCode);
   console.log(invite);
   Estate.findOne({'estateName': req.body.estateName}, function(err, estate){
-    console.log(estate);
+    console.log(estate.inviteCode);
     if(err){
       console.log("1");
       res.json({success : false, message: "Network Error"});
