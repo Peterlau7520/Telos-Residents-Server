@@ -25,7 +25,7 @@ const estateSchema = new Schema({
   chairmanName: String,
   currentPolls: [{ type: Schema.Types.ObjectId, ref: 'Poll' }],
   pastPolls: [{ type: Schema.Types.ObjectId, ref: 'Poll' }],
-  ivniteCode : String,
+  inviteCode : String,
 });
 
 const pollsSchema = new Schema({
