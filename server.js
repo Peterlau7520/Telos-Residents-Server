@@ -102,7 +102,7 @@ app.post('/register', (req, res) => {
         }
       })
       .catch(err => {
-        if(err)es.status(422).send({error: 'Try again'});
+        if(err)res.status(422).send({error: 'Try again'});
       })
     }
   })
