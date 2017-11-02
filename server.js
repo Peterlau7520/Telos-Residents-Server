@@ -85,8 +85,8 @@ app.post('/register', (req, res) => {
           user = new Resident({
             name: req.body.name,
             email: req.body.email,
-            // unit: unit,
-            // block: block,
+            // unit: unit. Add it back later
+            // block: block. Add it back later
             password: req.body.password,
             estateName : estate.estateName
           });
