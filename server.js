@@ -65,7 +65,7 @@ app.post('/register', (req, res) => {
       console.log("2");
       res.json({success : false , message: "Invalid Estate Name"});
     }
-    if(invite.indexOf().estate.inviteCode == -1){
+    if(invite.indexOf(estate.inviteCode) == -1){
       console.log(invite, estate.inviteCode);
       res.json({success : false , message: "Invalid Invite Code"});
     }
