@@ -53,10 +53,12 @@ app.use(function(req, res, next) {
   // token = token.replace('Bearer ', '');
   jwt.verify(token, 'telosresidentserver', function(err, user) {
     if (err) {
+      console.log(err)
       res.json({
         success: false,
         message: 'Please register Log in using a valid email to submit posts'
       });
+      next();
     } else {
       req.user = user; //set the user to req so other routes can use it
       next();
