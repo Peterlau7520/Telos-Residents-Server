@@ -194,7 +194,7 @@ router.get('/currentMeetings', (req, res) => {
 
 router.post('/vote', (req, res) => {
   const residentId = "5a335e49fbb210c93ff37d66"
-  const body = { hkid: "1",
+  const body = { hkid: "0",
   pollId: "5a3221dfc508057f5352d86c",
   choice: "Hello" }
    Resident.findOne({_id: residentId,  hkid:  body.hkid })

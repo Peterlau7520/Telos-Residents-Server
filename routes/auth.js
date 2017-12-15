@@ -52,27 +52,25 @@ function setUserInfo(request){
   };
 }
 
-/*function decrypt(text){
+function decrypt(text){
   var decipher = crypto.createDecipher(algorithm,password)
   var dec = decipher.update(text,'hex','utf8')
   dec += decipher.final('utf8');
   return dec;
-}*/
+}
 
 router.post('/register', (req, res) => {
     console.log("reached route register", req.body);
-    //var invite = decrypt(req.body.inviteCode);
+    var invite = decrypt(req.body.inviteCode);
     var invite = req.body.inviteCode
     console.log(invite);
     Estate.findOne({'estateName': req.body.estateName}, function(err, estate){
       console.log(estate);
       if(err){
-        console.log("1");
         res.json({success : false, message: "Network Error"});
       }
       if(!estate){
-        console.log("2");const Estate = models.Estate;
-
+        const Estate = models.Estate;
         res.json({success : false , message: "Invalid Estate Name"});
       }
       if(invite.indexOf(estate.inviteCode) == -1){
@@ -80,8 +78,6 @@ router.post('/register', (req, res) => {
         res.json({success : false , message: "Invalid Invite Code"});
       }
       else{
-        console.log("3", estate);
-  
         Resident.findOne({
           'estateName' : req.body.estateName,
           'unit' : req.body.unit,
@@ -91,14 +87,16 @@ router.post('/register', (req, res) => {
           if(resident){
             res.json({success : false ,  message : "Your unit is already registered."});
           }else{
-            console.log("Req.body in register", req.body);
             user = new Resident({
               name: req.body.name,
               email: req.body.email,
-              // unit: unit. Add it back later
-              // block: block. Add it back later
+              unit: req.body.unit,
               password: req.body.password,
-              estateName : estate.estateName
+              estateName : estate.estateName,
+              shares: req.body.shares,
+              block: req.body.block,
+              floor: req.body.floor,
+              nature: req.body.nature
             });
             user.save(function(err, user){
               var userInfo = setUserInfo(user);
@@ -197,18 +195,22 @@ router.post('/changePassword', (req, res) => {
 
 router.post('/saveHKID', (req, res) => {
 console.log(req.body, "reqqqq")
+var hkids = []
+const body = { residentId: "",
+  hkidsArray:  [ { file: {}, hkid: "1", ownersName: 'peter'}, { file: {}, hkid: "1", ownersName: 'peter'}] }
 const promiseArr = []
 var info = req.body;
- var avatarS3Url = '';
-var originalBlob = info.files; 
+var avatarS3Url = '';
+var originalBlob = info.hkidsArray; 
 if (originalBlob && originalBlob !== '' && originalBlob !== null){
   promiseArr.push(new Promise(function(resolve, reject){
     forEach(originalBlob, function(item, key, a){
-    var info = item.data;
-    var name = info.name;
+    var info = item.file.data;
+    var name = info.file.name.replace(/ /g,'');
+    hkids.push(item.hkid)
       s3.upload({
-        Body: buf,
-        Key: 'HKID/'+name,
+        Body: info,
+        Key: `${req.user.estateName}/${item.hkid}/${item.ownersName}/${name}`,
         ACL: 'public-read'
       }, function(err, data1) {
         if (err) {
@@ -216,27 +218,26 @@ if (originalBlob && originalBlob !== '' && originalBlob !== null){
         }
         if(data1) {
           avatarS3Url = data1.Location
-          resolve(avatarS3Url)
+          resolve({image: avatarS3Url, hkids: hkids})
         }
       })
 
     })
   }))
+  Promise.all(promiseArr)
+    .then(function(data, err){
+      update(req, res, data);
+    })
 }
 else {
       update(req, res, '');
     }
-    Promise.all(promiseArr)
-    .then(function(data, err){
-      update(req, res, data);
-    })
-    function update(req, res, fileLinks){
-      const body = {residentId: "5a335e49fbb210c93ff37d66",               //req.body
-                    hkid: ["1", "2"]}
+    function update(req, res, data){
+      const body = {residentId: "5a335e49fbb210c93ff37d66"}               //req.body
       Resident.update({_id: body.residentId},
         {$set: 
-          { hkid: body.hkid,
-            hkidImage: fileLinks,
+          { hkid: data.hkids,
+            hkidImage: data.image,
           }
         }, {
         new: true
@@ -253,18 +254,20 @@ else {
 
 
 router.post('/saveSignature', (req, res) => {
+  const body = { residentId: "",
+  signatureArray:  [ { file: {}, ownersName: 'peter'}, { file: {}, ownersName: 'peter'}] }
 const promiseArr = []
 var info = req.body;
  var avatarS3Url = '';
-var originalBlob = info.files; 
+var originalBlob = info.signatureArray; 
 if (originalBlob && originalBlob !== '' && originalBlob !== null){
   promiseArr.push(new Promise(function(resolve, reject){
     forEach(originalBlob, function(item, key, a){
-    var info = item.data;
-    var name = info.name;
+    var info = item.file.data;
+    var name = info.file.name;
       s3.upload({
         Body: buf,
-        Key: 'signature/'+name,
+        Key: `${req.user.estateName}/OwnersSignature/${item.ownersName}/${name}`,
         ACL: 'public-read'
       }, function(err, data1) {
         if (err) {
@@ -306,18 +309,20 @@ else {
 })
 
 router.post('/saveChop', (req, res) => {
+   const body = { residentId: "",
+  chopArray:  [ { file: {}, companyName: ''}, { file: {}, companyName: ''}] }
 const promiseArr = []
 var info = req.body;
  var avatarS3Url = '';
-var originalBlob = info.files; 
+var originalBlob = info.chopArray; 
 if (originalBlob && originalBlob !== '' && originalBlob !== null){
   promiseArr.push(new Promise(function(resolve, reject){
     forEach(originalBlob, function(item, key, a){
-    var info = item.data;
-    var name = info.name;
+    var info = item.file.data;
+    var name = info.file.name;
       s3.upload({
         Body: buf,
-        Key: 'chop/'+name,
+        Key: `${req.user.estateName}/CompanyChop/${item.companyName}/${name}`,
         ACL: 'public-read'
       }, function(err, data1) {
         if (err) {
