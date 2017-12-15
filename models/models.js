@@ -32,9 +32,9 @@ const residentSchema = new Schema({
     nature: String,
     numberOfOwners: String,
     shares: String,
-    hkid: String,
-    hkidImage: String,
-    signature: String,
+    hkid: Array,
+    hkidImage: Array,
+    signature: Array,
     chopImage: String,
     proxyAppointed: [
     { type: Schema.Types.ObjectId,
@@ -49,6 +49,7 @@ const residentSchema = new Schema({
     ]
 });
 
+
 const estateSchema = new Schema({
   estateName: String,
   username: String,
@@ -58,23 +59,6 @@ const estateSchema = new Schema({
   currentPolls: [{ type: Schema.Types.ObjectId, ref: 'Poll' }],
   pastPolls: [{ type: Schema.Types.ObjectId, ref: 'Poll' }],
   inviteCode : String,
-});
-
-const pollsSchema = new Schema({
-    projectName: String,
-    projectNameChn: String, 
-    pollName: String,
-    pollNameChn: String,
-    summary: String,
-    summaryChn: String,
-    fileLinks: Array,
-    estateName: String,
-    options: Array,
-    endTime: String,
-    active: Boolean,
-    voted: [{type: Schema.Types.ObjectId, ref: 'Resident'}],
-    results: [{choice: String, name: String}],
-    votes: Array
 });
 
 const pollSchema = new Schema({
@@ -97,6 +81,10 @@ const pollSchema = new Schema({
     ],
     finalResult: String,
     results: [{choice: String, percentage: Number}],
+    votingResults: [{choice: String, resident: {
+            type: Schema.Types.ObjectId,
+            ref: 'Resident'
+        }}],
     votes: Array,
     pollReport: Array
 });

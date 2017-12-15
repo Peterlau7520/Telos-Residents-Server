@@ -7,10 +7,17 @@ const Resident = models.Resident;
 const Poll = models.Poll;
 const jwt = require('jsonwebtoken');
 const bcrypt   = require('bcrypt-nodejs');
-
+const BucketName = 'telospdf';
+var AWS = require('aws-sdk');
+AWS.config.update({
+  accessKeyId: 'AKIAIMLMZLII2XCKU6UA',
+  secretAccessKey: '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',
+  region: 'ap-southeast-1'
+});
+const bucket = new AWS.S3({params: {Bucket: BucketName}});
 function generateToken(user){
   return jwt.sign(user, 'telosresidentserver', {
-    expiresIn: 10080
+    expiresIn: 10000080
   });
 }
 
@@ -51,7 +58,6 @@ function setUserInfo(request){
   dec += decipher.final('utf8');
   return dec;
 }*/
-
 
 router.post('/register', (req, res) => {
     console.log("reached route register", req.body);
@@ -152,11 +158,9 @@ router.post('/changePassword', (req, res) => {
     console.log("reached here", req.body);
     Resident.findOne({'email' : req.body.email}, function(err, user){
       if(err){
-        console.log('1');
         res.json({success : false, message: "Network Error"});
       }
       if(!user){
-        console.log('2');
         res.json({
           success : false,
           message : "Account Does Not Exist"
@@ -164,15 +168,16 @@ router.post('/changePassword', (req, res) => {
         // res.status(404).send({error: 'Login Failed. Try again.'});
       }
       else{
-        console.log('3');
         user.comparePassword(req.body.oldPassword, function(err, isMatch){
           if(!isMatch){
             res.json({success : false, message: "Old Password Does Not Match"});
           }else{
-            var pass = exports.genHashPassword(req.body.password)
-            console.log(pass, "pass")
-            /*Resident.update({_id: user._id},
-             {$set: { password: pass }
+            const saltRounds = 5;
+            var salt = bcrypt.genSaltSync(saltRounds);
+            var hash = bcrypt.hashSync(req.body.password, salt);
+            console.log(hash, "pass")
+            Resident.update({_id: user._id},
+             {$set: { password: hash }
             }, {
               new: true
             })
@@ -182,10 +187,178 @@ router.post('/changePassword', (req, res) => {
               // token: 'JWT ' + generateToken(userInfo),
               message: "Password Updated Successfully"
             });
-          })*/
+          })
           }
        })
       }
    })
 })
+
+
+router.post('/saveHKID', (req, res) => {
+console.log(req.body, "reqqqq")
+const promiseArr = []
+var info = req.body;
+ var avatarS3Url = '';
+var originalBlob = info.files; 
+if (originalBlob && originalBlob !== '' && originalBlob !== null){
+  promiseArr.push(new Promise(function(resolve, reject){
+    forEach(originalBlob, function(item, key, a){
+    var info = item.data;
+    var name = info.name;
+      s3.upload({
+        Body: buf,
+        Key: 'HKID/'+name,
+        ACL: 'public-read'
+      }, function(err, data1) {
+        if (err) {
+          console.log(err)
+        }
+        if(data1) {
+          avatarS3Url = data1.Location
+          resolve(avatarS3Url)
+        }
+      })
+
+    })
+  }))
+}
+else {
+      update(req, res, '');
+    }
+    Promise.all(promiseArr)
+    .then(function(data, err){
+      update(req, res, data);
+    })
+    function update(req, res, fileLinks){
+      const body = {residentId: "5a335e49fbb210c93ff37d66",               //req.body
+                    hkid: ["1", "2"]}
+      Resident.update({_id: body.residentId},
+        {$set: 
+          { hkid: body.hkid,
+            hkidImage: fileLinks,
+          }
+        }, {
+        new: true
+        })
+        .then(function(pass, err){
+        res.json({
+          success : true,
+            // token: 'JWT ' + generateToken(userInfo),
+          message: "Resident Updated Successfully"
+        });
+      })
+    }
+})
+
+
+router.post('/saveSignature', (req, res) => {
+const promiseArr = []
+var info = req.body;
+ var avatarS3Url = '';
+var originalBlob = info.files; 
+if (originalBlob && originalBlob !== '' && originalBlob !== null){
+  promiseArr.push(new Promise(function(resolve, reject){
+    forEach(originalBlob, function(item, key, a){
+    var info = item.data;
+    var name = info.name;
+      s3.upload({
+        Body: buf,
+        Key: 'signature/'+name,
+        ACL: 'public-read'
+      }, function(err, data1) {
+        if (err) {
+          console.log(err)
+        }
+        if(data1) {
+          avatarS3Url = data1.Location
+          resolve(avatarS3Url)
+        }
+      })
+
+    })
+  }))
+}
+else {
+      update(req, res, '');
+    }
+    Promise.all(promiseArr)
+    .then(function(data, err){
+      update(req, res, data);
+    })
+    function update(req, res, fileLinks){
+      const body = {residentId: "5a335e49fbb210c93ff37d66"} //req.body
+      Resident.update({_id: body.residentId},
+        {$set: 
+          { signature: fileLinks,
+          }
+        }, {
+        new: true
+        })
+        .then(function(pass, err){
+        res.json({
+          success : true,
+            // token: 'JWT ' + generateToken(userInfo),
+          message: "Resident Updated Successfully"
+        });
+      })
+    }
+})
+
+router.post('/saveChop', (req, res) => {
+const promiseArr = []
+var info = req.body;
+ var avatarS3Url = '';
+var originalBlob = info.files; 
+if (originalBlob && originalBlob !== '' && originalBlob !== null){
+  promiseArr.push(new Promise(function(resolve, reject){
+    forEach(originalBlob, function(item, key, a){
+    var info = item.data;
+    var name = info.name;
+      s3.upload({
+        Body: buf,
+        Key: 'chop/'+name,
+        ACL: 'public-read'
+      }, function(err, data1) {
+        if (err) {
+          console.log(err)
+        }
+        if(data1) {
+          avatarS3Url = data1.Location
+          resolve(avatarS3Url)
+        }
+      })
+
+    })
+  }))
+}
+else {
+      update(req, res, '');
+    }
+    Promise.all(promiseArr)
+    .then(function(data, err){
+      update(req, res, data);
+    })
+    function update(req, res, fileLinks){
+      const body = {residentId: "5a335e49fbb210c93ff37d66"} //req.body
+      Resident.update({_id: body.residentId},
+        {$set: 
+          { chopImage: fileLinks,
+          }
+        }, {
+        new: true
+        })
+        .then(function(pass, err){
+        res.json({
+          success : true,
+            // token: 'JWT ' + generateToken(userInfo),
+          message: "Resident Updated Successfully"
+        });
+      })
+    }
+})
+
+
+
+
 module.exports = router;

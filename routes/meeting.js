@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const models = require('../models/models');
 const Meeting = models.Meeting;
+const Poll = models.Poll;
 const _ = require('lodash');
 const forEach = require('async-foreach').forEach;
 const dateFormat = require('dateformat');
@@ -189,6 +190,47 @@ router.get('/currentMeetings', (req, res) => {
             res.json({message: "No Meetings Found", success: true})
         }
     })
+})
+
+router.post('/vote', (req, res) => {
+  const residentId = "5a335e49fbb210c93ff37d66"
+  const body = { hkid: "1",
+  pollId: "5a3221dfc508057f5352d86c",
+  choice: "Hello" }
+   Resident.findOne({_id: residentId,  hkid:  body.hkid })
+   .then(function(data, err){
+    if(data){
+         Poll.update({_id: body.pollId},
+        {$set: 
+          { votingResults: {choice: body.choice, resident: residentId} ,
+          }
+        }, {
+        new: true
+        })
+        .then(function(poll, err){
+        Resident.update({_id: residentId},
+        {$push: 
+          { polls: body.pollId,
+          }
+        }, {
+        new: true
+        })
+        .then(function(pass, err){
+          res.json({
+            success : true,
+              // token: 'JWT ' + generateToken(userInfo),
+            message: "choice has just been saved"
+          });
+        })
+      })
+    }else{
+      res.json({
+          success : true,
+            // token: 'JWT ' + generateToken(userInfo),
+          message: "HKID Does Not Match"
+        });
+    }
+   })
 })
 
 module.exports = router;
