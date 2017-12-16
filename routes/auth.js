@@ -52,16 +52,16 @@ function setUserInfo(request){
   };
 }
 
-function decrypt(text){
+/*function decrypt(text){
   var decipher = crypto.createDecipher(algorithm,password)
   var dec = decipher.update(text,'hex','utf8')
   dec += decipher.final('utf8');
   return dec;
-}
+}*/
 
 router.post('/register', (req, res) => {
     console.log("reached route register", req.body);
-    var invite = decrypt(req.body.inviteCode);
+    //var invite = decrypt(req.body.inviteCode);
     var invite = req.body.inviteCode
     console.log(invite);
     Estate.findOne({'estateName': req.body.estateName}, function(err, estate){

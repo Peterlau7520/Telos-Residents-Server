@@ -16,7 +16,8 @@ const UserAnswers = models.UserAnswers;
 
 router.get('/allSurveys', (req, res) => {
     const promiseArr =[]
-  Survey.find({}).lean()
+    const estateName = req.user.estateName
+  Survey.find({estate: estateName}).lean()
   .then(function(survey, err) {
     if(survey.length){
         var todayDate = new Date()
