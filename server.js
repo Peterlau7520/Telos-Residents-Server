@@ -38,6 +38,10 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
 
+
+
+//----------------ROUTING----------------
+app.use('/', authRoutes);
 app.use(function(req, res, next) {
   // check header or url parameters or post parameters for token
   console.log(req.headers);
@@ -65,9 +69,6 @@ app.use(function(req, res, next) {
     }
   });
 });
-
-//----------------ROUTING----------------
-app.use('/', authRoutes);
 app.use('/', noticeRoutes);
 app.use('/', surveyRoutes);
 app.use('/', meetingRoutes);

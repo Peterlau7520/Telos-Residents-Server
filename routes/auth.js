@@ -47,6 +47,7 @@ function setUserInfo(request){
     _id: request._id,
     name: request.name,
     email: request.email,
+    account: request.account,
     estateName: request.estateName,
     unit: request.unit
   };
@@ -119,7 +120,7 @@ router.post('/register', (req, res) => {
 
 router.post('/login', (req, res) => {
     console.log("reached here", req.body);
-    Resident.findOne({'email' : req.body.email}, function(err, user){
+    Resident.findOne({'account' : req.body.account}, function(err, user){
       if(err){
         console.log('1');
         res.json({success : false, message: "Network Error"});
@@ -134,8 +135,7 @@ router.post('/login', (req, res) => {
       }
       else{
         console.log('3');
-        user.comparePassword(req.body.password, function(err, isMatch){
-          if(!isMatch){
+          if(user.password != req.body.password){
             res.json({success : false, message: "Wrong Password"});
           }else{
             var userInfo = setUserInfo(user);
@@ -146,7 +146,7 @@ router.post('/login', (req, res) => {
               user: userInfo
             });
           }
-       })
+    
       }
    })
 })
