@@ -59,6 +59,36 @@ const estateSchema = new Schema({
   currentPolls: [{ type: Schema.Types.ObjectId, ref: 'Poll' }],
   pastPolls: [{ type: Schema.Types.ObjectId, ref: 'Poll' }],
   inviteCode : String,
+  surveys: [
+        {
+            type: Schema.Types.ObjectId,
+            ref: 'Survey'
+        }
+    ],
+    currentMeetings: [
+        {
+            type: Schema.Types.ObjectId,
+            ref: 'Meeting'
+        }
+    ],
+    pastMeetings: [
+        {
+            type: Schema.Types.ObjectId,
+            ref: 'Meeting'
+        }
+    ],
+    currentNotices: [
+        {
+            type: Schema.Types.ObjectId,
+            ref: 'Notice'
+        }
+    ],
+    pastNotices: [
+        {
+            type: Schema.Types.ObjectId,
+            ref: 'Notice'
+        }
+    ]
 });
 
 const pollSchema = new Schema({
@@ -94,6 +124,7 @@ const noticeSchema = new Schema({
     title: String,
     titleChn: String,
     endTime: String,
+    estate: String,
     postDate: String,
     fileLinks: Array,
     active: Boolean,
@@ -104,6 +135,7 @@ const noticeSchema = new Schema({
 const surveySchema = new Schema({
     title: String,
     titleChn: String,
+    estate: String,
     effectiveTo: Date,
     postDate: {type: Date, default: new Date()},
     targetAudience: [{block: String, floors: Array}],

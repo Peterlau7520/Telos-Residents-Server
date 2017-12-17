@@ -21,64 +21,63 @@ AWS.config.update({
 
 const bucket = new AWS.S3({params: {Bucket: BucketName}});
 
-
+/*Finding the past meeeting*/
 router.get('/pastMeetings', (req, res) => {
-    Meeting.find().populate('polls').lean().then(function(meetings, err){
+  const estateName = "HKU" // req.user.estateName
+    Meeting.find({estate: estateName}).populate('polls').lean().then(function(meetings, err){
         const promiseArr = []
         var pastMeetings = []
-        if(meetings.length > 0) {
+          if(meetings.length > 0) {
             promiseArr.push(new Promise(function(resolve, reject){
                forEach(meetings, function(item, key, a){
-                if( item.fileLinks && item.fileLinks.length > 0) {
+                  if( item.fileLinks && item.fileLinks.length > 0) {
                       let fileLinks = [];
                       var titleLink = ''
                       var fileLinksLink = ''
-                      if(item.title){
-                      titleLink = item.title
-                      titleLink = titleLink.trim();
-                  }
-                  if(item.fileLinks[0]){
-                      fileLinksLink = item.fileLinks[0]
-                      fileLinksLink = fileLinksLink.trim();
-                  }
-                       
-                        let Key = `${req.user.estateName}/${titleLink}/${fileLinksLink}`;
-                        fileLinks.push({
-                          name: item.fileLinks[0],
-                          url: "https://"+BucketName+".s3.amazonaws.com/"+Key
+                        if(item.title){
+                        titleLink = item.title
+                        titleLink = titleLink.trim();
+                        }
+                        if(item.fileLinks[0]){
+                            fileLinksLink = item.fileLinks[0]
+                            fileLinksLink = fileLinksLink.trim();
+                        }
+                          let Key = `${req.user.estateName}/${titleLink}/${fileLinksLink}`;
+                          fileLinks.push({
+                            name: item.fileLinks[0],
+                            url: "https://"+BucketName+".s3.amazonaws.com/"+Key
+                          })
+                          item.fileLinks = fileLinks;
+                    }   
+                    if(item.polls){
+                        forEach(item.polls, function(poll, key, a){ 
+                            var pollEndTime = moment(new Date(poll.endTime));
+                            item.polls[key].endTime = pollEndTime.format("MM-DD-YYYY");
+                        let polefileLinks = []; 
+                        if(poll.fileLinks){ 
+                            forEach(poll.fileLinks, function(name, key, a){ 
+                                let fileLinks = [];
+                              var titleLink = ''
+                              var fileLinksLink = ''
+                              if(poll.title){
+                              titleLink = poll.title
+                              titleLink = titleLink.trim();
+                        }
+                        if(name){
+                            fileLinksLink = name
+                            fileLinksLink = fileLinksLink.trim();
+                        }
+                          let Key = `${req.user.estateName}/${titleLink}/${fileLinksLink}`;
+                          polefileLinks.push({
+                            name: name,
+                            url: "https://"+BucketName+".s3.amazonaws.com/"+Key
+                          })
+                          poll.fileLinks = polefileLinks;
                         })
-                      item.fileLinks = fileLinks;
-                }   
-                if(item.polls){
-                forEach(item.polls, function(poll, key, a){ 
-                    var pollEndTime = moment(new Date(poll.endTime));
-                    item.polls[key].endTime = pollEndTime.format("MM-DD-YYYY");
-                let polefileLinks = []; 
-                if(poll.fileLinks){ 
-                    forEach(poll.fileLinks, function(name, key, a){ 
-                        let fileLinks = [];
-                      var titleLink = ''
-                      var fileLinksLink = ''
-                      if(poll.title){
-                      titleLink = poll.title
-                      titleLink = titleLink.trim();
-                  }
-                  if(name){
-                      fileLinksLink = name
-                      fileLinksLink = fileLinksLink.trim();
-                  }
-
-                        let Key = `${req.user.estateName}/${titleLink}/${fileLinksLink}`;
-                        polefileLinks.push({
-                          name: name,
-                          url: "https://"+BucketName+".s3.amazonaws.com/"+Key
-                        })
-                      poll.fileLinks = polefileLinks;
+                       }
                     })
-                }
-                })
-            }
-                     var startTime = moment.utc(new Date(item.startTime));
+                   }
+                    var startTime = moment.utc(new Date(item.startTime));
                     item.startTime =  startTime.format("MM/DD/YYYY hh:mm a");
                     console.log(item)
                     if(Date.parse(new Date(item.endTime)) < Date.parse(new Date)){
@@ -87,22 +86,22 @@ router.get('/pastMeetings', (req, res) => {
                     pastMeetings.push(item)
                     }
                     resolve(pastMeetings)
-               })
-           }))
+                })
+            }))
             Promise.all(promiseArr)
-            .then(function(data){
-             res.json({pastMeetings: data[0], success: true})             
-            })
+              .then(function(data){
+               res.json({pastMeetings: data[0], success: true})             
+              })
         }
-       else{
-            res.json({message: "No Meetings Found", success: true})
-        }
+         else{
+              res.json({message: "No Meetings Found", success: true})
+          }
     })
 })
-
+/*Finding the current meeeting*/
 router.get('/currentMeetings', (req, res) => {
-  console.log(req.headers['email'], "ggg")
-    Meeting.find().populate('polls').lean().then(function(meetings, err){
+  const estateName = "HKU" // req.user.estateName
+    Meeting.find({estate: estateName}).populate('polls').lean().then(function(meetings, err){
         const promiseArr = []
         const proxyAppointed = []
         var currentMeetings = []
@@ -113,77 +112,73 @@ router.get('/currentMeetings', (req, res) => {
                       let fileLinks = [];
                       var titleLink = ''
                       var fileLinksLink = ''
-                      if(item.title){
-                      titleLink = item.title
-                      titleLink = titleLink.trim();
-                  }
-                  if(item.fileLinks[0]){
-                      fileLinksLink = item.fileLinks[0]
-                      fileLinksLink = fileLinksLink.trim();
-                  }
-                       
+                        if(item.title){
+                        titleLink = item.title
+                        titleLink = titleLink.trim();
+                        }
+                        if(item.fileLinks[0]){
+                            fileLinksLink = item.fileLinks[0]
+                            fileLinksLink = fileLinksLink.trim();
+                        }
                         let Key = `${req.user.estateName}/${titleLink}/${fileLinksLink}`;
                         fileLinks.push({
                           name: item.fileLinks[0],
                           url: "https://"+BucketName+".s3.amazonaws.com/"+Key
                         })
-                      item.fileLinks = fileLinks;
+                        item.fileLinks = fileLinks;
                 }   
                 if(item.polls){
-                forEach(item.polls, function(poll, key, a){ 
-                    var pollEndTime = moment(new Date(poll.endTime));
-                    item.polls[key].endTime = pollEndTime.format("MM-DD-YYYY");
-                let polefileLinks = []; 
-                if(poll.fileLinks){ 
-                    forEach(poll.fileLinks, function(name, key, a){ 
-                        let fileLinks = [];
-                      var titleLink = ''
-                      var fileLinksLink = ''
-                      if(poll.title){
-                      titleLink = poll.title
-                      titleLink = titleLink.trim();
+                  forEach(item.polls, function(poll, key, a){ 
+                      var pollEndTime = moment(new Date(poll.endTime));
+                      item.polls[key].endTime = pollEndTime.format("MM-DD-YYYY");
+                  let polefileLinks = []; 
+                  if(poll.fileLinks){ 
+                      forEach(poll.fileLinks, function(name, key, a){ 
+                          let fileLinks = [];
+                        var titleLink = ''
+                        var fileLinksLink = ''
+                        if(poll.title){
+                        titleLink = poll.title
+                        titleLink = titleLink.trim();
+                        }
+                        if(name){
+                            fileLinksLink = name
+                            fileLinksLink = fileLinksLink.trim();
+                        }
+                          let Key = `${req.user.estateName}/${titleLink}/${fileLinksLink}`;
+                          polefileLinks.push({
+                            name: name,
+                            url: "https://"+BucketName+".s3.amazonaws.com/"+Key
+                          })
+                        poll.fileLinks = polefileLinks;
+                      })
                   }
-                  if(name){
-                      fileLinksLink = name
-                      fileLinksLink = fileLinksLink.trim();
-                  }
-
-                        let Key = `${req.user.estateName}/${titleLink}/${fileLinksLink}`;
-                        polefileLinks.push({
-                          name: name,
-                          url: "https://"+BucketName+".s3.amazonaws.com/"+Key
-                        })
-                      poll.fileLinks = polefileLinks;
-                    })
-                }
-                })
-            }     
-
+                  })
+               }     
                      var startTime = moment.utc(new Date(item.startTime));
                      item.startTime =  startTime.format("MM/DD/YYYY hh:mm a");
-                    console.log(item, "item")
-                    if(item.view > 0 ){
-                      console.log("hhhh")
-                      Resident.update({email: req.email,
-                        $push: {
-                          proxyAppointed: item._id
-                        }
+                      if(item.view > 0 ){
+                        console.log("hhhh")
+                        Resident.update({email: req.email,
+                          $push: {
+                            proxyAppointed: item._id
+                          }
+                          })
+                        .then(function(Resident, err){
+                          console.log(Resident)
                         })
-                      .then(function(Resident, err){
-                        console.log(Resident)
-                      })
-                    }
-                    if(Date.parse(new Date(item.endTime)) > Date.parse(new Date)){
-                      var endTime = moment.utc(new Date(item.endTime));
-                    item.endTime =  endTime.format("MM/DD/YYYY hh:mm a");
-                    currentMeetings.push(item)
-                    }
+                      }
+                      if(Date.parse(new Date(item.endTime)) > Date.parse(new Date)){
+                        var endTime = moment.utc(new Date(item.endTime));
+                      item.endTime =  endTime.format("MM/DD/YYYY hh:mm a");
+                      currentMeetings.push(item)
+                      }
                     resolve(currentMeetings)
-               })
-           }))
+                })
+            }))
             Promise.all(promiseArr)
             .then(function(data){
-             res.json({currentMeetings: data[0], success: true})             
+              res.json({currentMeetings: data[0], success: true})             
             })
         }
        else{
@@ -191,7 +186,7 @@ router.get('/currentMeetings', (req, res) => {
         }
     })
 })
-
+/*Voting for a particular Meeting's Poll*/
 router.post('/vote', (req, res) => {
   const residentId = "5a335e49fbb210c93ff37d66"
   const body = { hkid: "0",

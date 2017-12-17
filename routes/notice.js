@@ -15,8 +15,9 @@ AWS.config.update({
 
 const bucket = new AWS.S3({params: {Bucket: BucketName}});
 router.get('/noticeBoard', (req, res) => {
+  const estateName =  "HKU" //req.user.estateName
    Notice
-  .find()
+  .find({estate: estateName})
   .lean()
   .then(function(notices, err) {
     if(notices.length){
