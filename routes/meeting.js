@@ -27,6 +27,7 @@ router.get('/pastMeetings', (req, res) => {
     Meeting.find({estate: estateName}).populate('polls').lean().then(function(meetings, err){
         const promiseArr = []
         var pastMeetings = []
+
           if(meetings.length > 0) {
             promiseArr.push(new Promise(function(resolve, reject){
                forEach(meetings, function(item, key, a){
@@ -105,6 +106,7 @@ router.get('/currentMeetings', (req, res) => {
         const promiseArr = []
         const proxyAppointed = []
         var currentMeetings = []
+        //check whether telos is appointed
         if(meetings.length > 0) {
             promiseArr.push(new Promise(function(resolve, reject){
                forEach(meetings, function(item, key, a){

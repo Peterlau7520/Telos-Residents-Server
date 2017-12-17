@@ -32,6 +32,7 @@ const residentSchema = new Schema({
     nature: String,
     numberOfOwners: String,
     shares: String,
+    registered: Boolean,
     hkid: Array,
     hkidImage: Array,
     signature: Array,
