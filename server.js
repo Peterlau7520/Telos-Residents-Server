@@ -34,8 +34,8 @@ const fs = require("fs");
 const s3Bucket = new AWS.S3( { params: {Bucket: 'telospdf'} } )
 var cors = require('cors');
 app.use(cors());
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json({limit: '50mb'}));
+app.use(bodyParser.urlencoded({ extended: true }));
 
 
 
