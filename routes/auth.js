@@ -132,7 +132,8 @@ router.post('/login', (req, res) => {
         // res.status(404).send({error: 'Login Failed. Try again.'});
       }
       else{
-          if(user.password != req.body.password){
+        user.comparePassword(req.body.password, function(err, isMatch){
+          if(!isMatch){
             res.json({success : false, message: "Wrong Password"});
           }else{
             if(user.registered == true){
@@ -158,7 +159,7 @@ router.post('/login', (req, res) => {
               });
             }
           }
-    
+        })
       }
    })
 })
