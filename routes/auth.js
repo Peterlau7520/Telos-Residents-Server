@@ -82,7 +82,7 @@ router.post('/register', (req, res) => {
         Resident.findOne({
           'estateName' : req.body.estateName,
           'unit' : req.body.unit,
-          'block' : req.body.block
+          'block' : req.body.block,
         })
         .then(resident => {
           if(resident){
@@ -120,31 +120,43 @@ router.post('/register', (req, res) => {
 
 router.post('/login', (req, res) => {
     console.log("reached here", req.body);
-    Resident.findOne({'account' : req.body.account}, function(err, user){
+    Resident.findOne({'email' : req.body.email}, function(err, user){
       if(err){
-        console.log('1');
         res.json({success : false, message: "Network Error"});
       }
       if(!user){
-        console.log('2');
-        res.json({
+          res.json({
           success : false,
           message : "Account Does Not Exist"
         });
         // res.status(404).send({error: 'Login Failed. Try again.'});
       }
       else{
-        console.log('3');
           if(user.password != req.body.password){
             res.json({success : false, message: "Wrong Password"});
           }else{
-            var userInfo = setUserInfo(user);
-            res.json({
-              success : true,
-              // token: 'JWT ' + generateToken(userInfo),
-              token:generateToken(userInfo),
-              user: userInfo
-            });
+            if(user.registered == true){
+              var userInfo = setUserInfo(user);
+              res.json({
+                success : true,
+                // token: 'JWT ' + generateToken(userInfo),
+                token:generateToken(userInfo),
+                user: userInfo,
+                registered: true
+              });
+            }
+            else{
+              var userInfo = setUserInfo(user);
+              res.json({
+                success : true,
+                // token: 'JWT ' + generateToken(userInfo),
+                token:generateToken(userInfo),
+                user: userInfo,
+                registered: false,
+                nature: user.nature,
+                numberOfOwners: user.numberOfOwners,
+              });
+            }
           }
     
       }

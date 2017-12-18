@@ -32,7 +32,6 @@ const residentSchema = new Schema({
     nature: String,
     numberOfOwners: String,
     shares: String,
-    registered: Boolean,
     hkid: Array,
     hkidImage: Array,
     signature: Array,
@@ -47,7 +46,8 @@ const residentSchema = new Schema({
             type: Schema.Types.ObjectId,
             ref: 'Post'
         }
-    ]
+    ],
+    registered: {type: Boolean , default: false},
 });
 
 
