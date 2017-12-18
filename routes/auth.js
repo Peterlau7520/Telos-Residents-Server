@@ -46,7 +46,6 @@ function setUserInfo(request){
   return {
     _id: request._id,
     name: request.name,
-    email: request.email,
     account: request.account,
     estateName: request.estateName,
     unit: request.unit
@@ -120,7 +119,7 @@ router.post('/register', (req, res) => {
 
 router.post('/login', (req, res) => {
     console.log("reached here", req.body);
-    Resident.findOne({'email' : req.body.email}, function(err, user){
+    Resident.findOne({'account' : req.body.account}, function(err, user){
       if(err){
         res.json({success : false, message: "Network Error"});
       }
@@ -132,6 +131,7 @@ router.post('/login', (req, res) => {
         // res.status(404).send({error: 'Login Failed. Try again.'});
       }
       else{
+          console.log(user.password);
           if(req.body.password !== user.password){
             res.json({success : false, message: "Wrong Password"});
           }else{
@@ -139,7 +139,7 @@ router.post('/login', (req, res) => {
               var userInfo = setUserInfo(user);
               res.json({
                 success : true,
-                // token: 'JWT ' + generateToken(userInfo),
+                // token: 'JWT ' + genserateToken(userInfo),
                 token:generateToken(userInfo),
                 user: userInfo,
                 registered: true
@@ -166,7 +166,7 @@ router.post('/login', (req, res) => {
 
 router.post('/changePassword', (req, res) => {
     console.log("reached here", req.body);
-    Resident.findOne({'email' : req.body.email}, function(err, user){
+    Resident.findOne({'account' : req.body.account}, function(err, user){
       if(err){
         res.json({success : false, message: "Network Error"});
       }
