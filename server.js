@@ -42,33 +42,33 @@ app.use(bodyParser.urlencoded({ extended: false }));
 
 //----------------ROUTING----------------
 app.use('/', authRoutes);
-app.use(function(req, res, next) {
-  // check header or url parameters or post parameters for token
-  console.log(req.headers);
-  var token = req.headers['authorization'];
-  console.log(token);
-  if (!token){
-    console.log("token failiure");
-    res.json({
-      success : false,
-      message : "Invalid login"
-    })
-  }
-  // token = token.replace('Bearer ', '');
-  jwt.verify(token, 'telosresidentserver', function(err, user) {
-    if (err) {
-      console.log(err)
-      res.json({
-        success: false,
-        message: 'Please register Log in using a valid email to submit posts'
-      });
-      next();
-    } else {
-      req.user = user; //set the user to req so other routes can use it
-      next();
-    }
-  });
-});
+// app.use(function(req, res, next) {
+//   // check header or url parameters or post parameters for token
+//   console.log(req.headers);
+//   var token = req.headers['authorization'];
+//   console.log(token);
+//   if (!token){
+//     console.log("token failiure");
+//     res.json({
+//       success : false,
+//       message : "Invalid login"
+//     })
+//   }
+//   // token = token.replace('Bearer ', '');
+//   jwt.verify(token, 'telosresidentserver', function(err, user) {
+//     if (err) {
+//       console.log(err)
+//       res.json({
+//         success: false,
+//         message: 'Please register Log in using a valid email to submit posts'
+//       });
+//       next();
+//     } else {
+//       req.user = user; //set the user to req so other routes can use it
+//       next();
+//     }
+//   });
+// });
 app.use('/', noticeRoutes);
 app.use('/', surveyRoutes);
 app.use('/', meetingRoutes);

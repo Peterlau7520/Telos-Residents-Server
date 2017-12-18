@@ -29,7 +29,7 @@ router.get('/noticeBoard', (req, res) => {
     var uniqueList2 = _.filter(notices, function(item, key, a){   
         if(item.fileLinks.length > 0) {
               let fileLinks = [];
-                let Key = `${req.user.estateName}/Notices/${item.title}/${item.fileLinks[0]}`;
+                let Key = `${estateName}/Notices/${item.title}/${item.fileLinks[0]}`;
                 fileLinks.push({
                   name: item.fileLinks[0],
                   url: "https://"+BucketName+".s3.amazonaws.com/"+Key

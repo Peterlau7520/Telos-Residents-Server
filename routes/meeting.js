@@ -43,7 +43,8 @@ router.get('/pastMeetings', (req, res) => {
                             fileLinksLink = item.fileLinks[0]
                             fileLinksLink = fileLinksLink.trim();
                         }
-                          let Key = `${req.user.estateName}/${titleLink}/${fileLinksLink}`;
+                          let Key = `${estateName}/${titleLink}/${fileLinksLink}`;
+                          // let Key = `${req.user.estateName}/${titleLink}/${fileLinksLink}`;
                           fileLinks.push({
                             name: item.fileLinks[0],
                             url: "https://"+BucketName+".s3.amazonaws.com/"+Key
@@ -122,7 +123,8 @@ router.get('/currentMeetings', (req, res) => {
                             fileLinksLink = item.fileLinks[0]
                             fileLinksLink = fileLinksLink.trim();
                         }
-                        let Key = `${req.user.estateName}/${titleLink}/${fileLinksLink}`;
+                        let Key = `${estateName}/${titleLink}/${fileLinksLink}`;
+                        // let Key = `${req.user.estateName}/${titleLink}/${fileLinksLink}`;
                         fileLinks.push({
                           name: item.fileLinks[0],
                           url: "https://"+BucketName+".s3.amazonaws.com/"+Key
@@ -147,7 +149,8 @@ router.get('/currentMeetings', (req, res) => {
                             fileLinksLink = name
                             fileLinksLink = fileLinksLink.trim();
                         }
-                          let Key = `${req.user.estateName}/${titleLink}/${fileLinksLink}`;
+                          let Key = `${estateName}/${titleLink}/${fileLinksLink}`;
+                          // let Key = `${req.user.estateName}/${titleLink}/${fileLinksLink}`;
                           polefileLinks.push({
                             name: name,
                             url: "https://"+BucketName+".s3.amazonaws.com/"+Key
