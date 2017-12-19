@@ -69,7 +69,7 @@ router.get('/pastMeetings', (req, res) => {
                             fileLinksLink = name
                             fileLinksLink = fileLinksLink.trim();
                         }
-                          let Key = `${req.user.estateName}/${titleLink}/${fileLinksLink}`;
+                          let Key = `${estateName}/${titleLink}/${fileLinksLink}`;
                           polefileLinks.push({
                             name: name,
                             url: "https://"+BucketName+".s3.amazonaws.com/"+Key
