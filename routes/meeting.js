@@ -200,9 +200,23 @@ router.post('/vote', (req, res) => {
    Resident.findOne({_id: residentId,  hkid:  body.hkid })
    .then(function(data, err){
     if(data){
-         Poll.update({_id: body.pollId},
+      Poll.find({ _id: body.pollId, voted: { $in: residentId  }})
+      .then(function(voted, err){
+        console.log("voted", voted)
+        if(voted){
+            res.json({
+            success : false,
+              // token: 'JWT ' + generateToken(userInfo),
+            message: "Already Voted"
+          });
+        }
+        else{
+          Poll.update({_id: body.pollId},
         {$set: 
           { votingResults: {choice: body.choice, resident: residentId} ,
+          },
+          $push: {
+            voted: residentId
           }
         }, {
         new: true
@@ -223,6 +237,8 @@ router.post('/vote', (req, res) => {
           });
         })
       })
+        }  
+      })
     }else{
       res.json({
           success : true,
@@ -230,7 +246,7 @@ router.post('/vote', (req, res) => {
           message: "HKID Does Not Match"
         });
     }
-   })
+       })
 })
 
 module.exports = router;
