@@ -49,7 +49,9 @@ function setUserInfo(request){
     name: request.name,
     account: request.account,
     estateName: request.estateName,
-    unit: request.unit
+    unit: request.unit,
+    nature: request.nature,
+    numberOfOwners: request.numberOfOwners
   };
 }
 
