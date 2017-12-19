@@ -5,6 +5,7 @@ const models = require('../models/models');
 const Estate = models.Estate;
 const Resident = models.Resident;
 const Poll = models.Poll;
+const forEach = require('async-foreach').forEach;
 const jwt = require('jsonwebtoken');
 const bcrypt   = require('bcrypt-nodejs');
 const BucketName = 'telospdf';
@@ -64,7 +65,7 @@ router.post('/register', (req, res) => {
     //var invite = decrypt(req.body.inviteCode);
     var invite = req.body.inviteCode
     console.log(invite);
-    Estate.findOne({'estateName': req.body.estateName}, function(err, estate){
+    Estate.findOne({'account': req.body.account}, function(err, estate){
       console.log(estate);
       if(err){
         res.json({success : false, message: "Network Error"});
@@ -213,22 +214,26 @@ const body = { residentId: "",
 const promiseArr = []
 var info = req.body;
 var avatarS3Url = '';
-var originalBlob = info.hkidsArray; 
-if (originalBlob && originalBlob !== '' && originalBlob !== null){
+//var originalBlob = info.hkidsArray; 
+if (req.body && req.body !== '' && req.body !== null){
   promiseArr.push(new Promise(function(resolve, reject){
-    forEach(originalBlob, function(item, key, a){
-    var info = item.file.data;
-    var name = info.file.name.replace(/ /g,'');
+    forEach(req.body, function(item, key, a){
+    var originalBlob = item.image
+    var regex       = /^data:.+\/(.+);base64,(.*)$/;
+    var matches     = originalBlob.match(regex);
+    var base64Data  = matches && matches.length && matches[2] ? matches[2] : '';
+    var buf         = new Buffer(base64Data, 'base64');
     hkids.push(item.hkid)
-      s3.upload({
-        Body: info,
-        Key: `${req.user.estateName}/${item.hkid}/${item.ownersName}/${name}`,
+      bucket.upload({
+        Body: buf,
+        Key: `HKID/${item.hkid}/HKId`,
         ACL: 'public-read'
       }, function(err, data1) {
         if (err) {
           console.log(err)
         }
         if(data1) {
+          console.log(data1, "data1")
           avatarS3Url = data1.Location
           resolve({image: avatarS3Url, hkids: hkids})
         }
@@ -238,6 +243,7 @@ if (originalBlob && originalBlob !== '' && originalBlob !== null){
   }))
   Promise.all(promiseArr)
     .then(function(data, err){
+      console.log("data", data)
       update(req, res, data);
     })
 }
@@ -255,6 +261,7 @@ else {
         new: true
         })
         .then(function(pass, err){
+          console.log(pass, "pass")
         res.json({
           success : true,
             // token: 'JWT ' + generateToken(userInfo),
@@ -277,7 +284,7 @@ if (originalBlob && originalBlob !== '' && originalBlob !== null){
     forEach(originalBlob, function(item, key, a){
     var info = item.file.data;
     var name = info.file.name;
-      s3.upload({
+      bucket.upload({
         Body: buf,
         Key: `${req.user.estateName}/OwnersSignature/${item.ownersName}/${name}`,
         ACL: 'public-read'
@@ -321,33 +328,36 @@ else {
 })
 
 router.post('/saveChop', (req, res) => {
+  console.log("r", req.body)
    const body = { residentId: "",
   chopArray:  [ { file: {}, companyName: ''}, { file: {}, companyName: ''}] }
 const promiseArr = []
 var info = req.body;
  var avatarS3Url = '';
-var originalBlob = info.chopArray; 
-if (originalBlob && originalBlob !== '' && originalBlob !== null){
+if (req.body && req.body !== '' && req.body !== null){
   promiseArr.push(new Promise(function(resolve, reject){
-    forEach(originalBlob, function(item, key, a){
-    var info = item.file.data;
-    var name = info.file.name;
-      s3.upload({
+    var originalBlob = req.body.image
+    var regex       = /^data:.+\/(.+);base64,(.*)$/;
+    var matches     = originalBlob.match(regex);
+    var base64Data  = matches && matches.length && matches[2] ? matches[2] : '';
+    var buf         = new Buffer(base64Data, 'base64');
+   /* var info = item.file.data;
+    var name = info.file.name;*/
+      bucket.upload({
         Body: buf,
-        Key: `${req.user.estateName}/CompanyChop/${item.companyName}/${name}`,
+        Key: `CompanyChop/${req.body.account}/CHOP`,
         ACL: 'public-read'
       }, function(err, data1) {
         if (err) {
           console.log(err)
         }
         if(data1) {
+          console.log("data1", data1)
           avatarS3Url = data1.Location
           resolve(avatarS3Url)
         }
       })
-
-    })
-  }))
+      }))
 }
 else {
       update(req, res, '');
@@ -357,8 +367,7 @@ else {
       update(req, res, data);
     })
     function update(req, res, fileLinks){
-      const body = {residentId: "5a335e49fbb210c93ff37d66"} //req.body
-      Resident.update({_id: body.residentId},
+      Resident.update({account: req.body.account},
         {$set: 
           { chopImage: fileLinks,
           }
@@ -366,10 +375,11 @@ else {
         new: true
         })
         .then(function(pass, err){
+          console.log(pass, "pass")
         res.json({
           success : true,
             // token: 'JWT ' + generateToken(userInfo),
-          message: "Resident Updated Successfully"
+          message: "Comapny Chop Updated Successfully"
         });
       })
     }
