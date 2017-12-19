@@ -277,6 +277,7 @@ else {
 router.post('/saveSignature', (req, res) => {
   const body = { residentId: "",
   signatureArray:  [ { file: {}, ownersName: 'peter'}, { file: {}, ownersName: 'peter'}] }
+console.log(req.body);
 const promiseArr = []
 var info = req.body;
  var avatarS3Url = '';
