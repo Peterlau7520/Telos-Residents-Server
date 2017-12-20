@@ -193,17 +193,15 @@ router.get('/currentMeetings', (req, res) => {
 })
 /*Voting for a particular Meeting's Poll*/
 router.post('/vote', (req, res) => {
-  const residentId = "5a335e49fbb210c93ff37d66"
-  const body = { hkid: "0",
-  pollId: "5a3221dfc508057f5352d86c",
-  choice: "Hello" }
-   Resident.findOne({_id: residentId,  hkid:  body.hkid })
+  console.log(req.body, "body")
+   Resident.findOne({account: req.body.account,  hkid: req.body.HKID })
    .then(function(data, err){
+    console.log(data, "if data")
     if(data){
-      Poll.find({ _id: body.pollId, voted: { $in: residentId  }})
+      Poll.find({ _id: req.body.pollID, voted: data._id  })
       .then(function(voted, err){
         console.log("voted", voted)
-        if(voted){
+        if(voted.length != 0){
             res.json({
             success : false,
               // token: 'JWT ' + generateToken(userInfo),
@@ -211,35 +209,37 @@ router.post('/vote', (req, res) => {
           });
         }
         else{
-          Poll.update({_id: body.pollId},
-        {$set: 
-          { votingResults: {choice: body.choice, resident: residentId} ,
-          },
-          $push: {
-            voted: residentId
-          }
-        }, {
-        new: true
-        })
-        .then(function(poll, err){
-        Resident.update({_id: residentId},
-        {$push: 
-          { polls: body.pollId,
-          }
-        }, {
-        new: true
-        })
-        .then(function(pass, err){
-          res.json({
-            success : true,
-              // token: 'JWT ' + generateToken(userInfo),
-            message: "choice has just been saved"
-          });
-        })
-      })
+          Poll.update({_id: req.body.pollID},
+            {$set: 
+              { votingResults: {choice: req.body.option, resident: data._id} ,
+              },
+              $push: {
+                voted: data._id
+              }
+            }, {
+            new: true
+            })
+            .then(function(poll, err){
+              Resident.update({account:  req.body.account},
+              {$push: 
+                { polls: req.body.pollID,
+                }
+              }, {
+              new: true
+              })
+              .then(function(pass, err){
+                console.log("pass", pass)
+                res.json({
+                  success : true,
+                    // token: 'JWT ' + generateToken(userInfo),
+                  message: "choice has just been saved"
+                });
+              })
+          })
         }  
       })
     }else{
+      console.log("HKID does not match")
       res.json({
           success : true,
             // token: 'JWT ' + generateToken(userInfo),
