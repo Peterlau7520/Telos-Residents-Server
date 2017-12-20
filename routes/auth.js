@@ -51,7 +51,8 @@ function setUserInfo(request){
     estateName: request.estateName,
     unit: request.unit,
     nature: request.nature,
-    numberOfOwners: request.numberOfOwners
+    numberOfOwners: request.numberOfOwners,
+    proxyAppointed: request.proxyAppointed
   };
 }
 
@@ -211,15 +212,13 @@ router.post('/changePassword', (req, res) => {
 router.post('/saveHKID', (req, res) => {
 console.log(req.body, "reqqqq")
 var hkids = []
-const body = { residentId: "",
-  hkidsArray:  [ { file: {}, hkid: "1", ownersName: 'peter'}, { file: {}, hkid: "1", ownersName: 'peter'}] }
 const promiseArr = []
 var info = req.body;
-var avatarS3Url = '';
+var avatarS3Url = [];
 //var originalBlob = info.hkidsArray; 
-if (req.body && req.body !== '' && req.body !== null){
+if (req.body.hkids && req.body.hkids !== '' && req.body.hkids !== null){
+  forEach(req.body.hkids, function(item, key, a){
   promiseArr.push(new Promise(function(resolve, reject){
-    forEach(req.body, function(item, key, a){
     var originalBlob = item.image
     var regex       = /^data:.+\/(.+);base64,(.*)$/;
     var matches     = originalBlob.match(regex);
@@ -228,33 +227,31 @@ if (req.body && req.body !== '' && req.body !== null){
     hkids.push(item.hkid)
       bucket.upload({
         Body: buf,
-        Key: `HKID/${item.hkid}/HKId`,
+        Key: `HKIDs/${item.hkid}/HKId.png`,
         ACL: 'public-read'
       }, function(err, data1) {
         if (err) {
           console.log(err)
         }
         if(data1) {
-          console.log(data1, "data1")
-          avatarS3Url = data1.Location
+          avatarS3Url.push(data1.Location)
+          console.log(avatarS3Url, "avatarS3Url")
           resolve({image: avatarS3Url, hkids: hkids})
         }
       })
-
-    })
   }))
+   })
   Promise.all(promiseArr)
     .then(function(data, err){
-      console.log("data", data)
-      update(req, res, data);
+      update(req, res, data[0]);
     })
 }
 else {
       update(req, res, '');
     }
     function update(req, res, data){
-      const body = {residentId: "5a335e49fbb210c93ff37d66"}               //req.body
-      Resident.update({_id: body.residentId},
+      console.log("reeeeee", req.body.account)
+      Resident.update({account: req.body.account},
         {$set: 
           { hkid: data.hkids,
             hkidImage: data.image,
@@ -275,27 +272,28 @@ else {
 
 
 router.post('/saveSignature', (req, res) => {
-  const body = { residentId: "",
-  signatureArray:  [ { file: {}, ownersName: 'peter'}, { file: {}, ownersName: 'peter'}] }
-console.log(req.body);
+  console.log(req.body, "rrrrr")
 const promiseArr = []
-var info = req.body;
  var avatarS3Url = '';
-var originalBlob = info.signatureArray; 
-if (originalBlob && originalBlob !== '' && originalBlob !== null){
+if (req.body.signatures && req.body.signatures !== '' && req.body.signatures !== null){
   promiseArr.push(new Promise(function(resolve, reject){
-    forEach(originalBlob, function(item, key, a){
-    var info = item.file.data;
-    var name = info.file.name;
+    forEach(req.body.signatures, function(item, key, a){
+      console.log(key, "key")
+    var originalBlob = item.image
+    var regex       = /^data:.+\/(.+);base64,(.*)$/;
+    var matches     = originalBlob.match(regex);
+    var base64Data  = matches && matches.length && matches[2] ? matches[2] : '';
+    var buf         = new Buffer(base64Data, 'base64');
       bucket.upload({
         Body: buf,
-        Key: `${req.user.estateName}/OwnersSignature/${item.ownersName}/${name}`,
+        Key: `${item.estate}/OwnersSignature/${item.account}/signature${key}.png`,
         ACL: 'public-read'
       }, function(err, data1) {
         if (err) {
           console.log(err)
         }
         if(data1) {
+          console.log(data1)
           avatarS3Url = data1.Location
           resolve(avatarS3Url)
         }
@@ -313,19 +311,24 @@ else {
     })
     function update(req, res, fileLinks){
       const body = {residentId: "5a335e49fbb210c93ff37d66"} //req.body
-      Resident.update({_id: body.residentId},
+      Resident.update({account: req.body.signatures[0].account},
         {$set: 
-          { signature: fileLinks,
+          { 
+            signature: fileLinks,
+          },
+          $push:{
+            proxyAppointed: req.body.meeting_id
           }
         }, {
         new: true
         })
         .then(function(pass, err){
-        res.json({
-          success : true,
-            // token: 'JWT ' + generateToken(userInfo),
-          message: "Resident Updated Successfully"
-        });
+          console.log("pass", pass)
+          res.json({
+            success : true,
+              // token: 'JWT ' + generateToken(userInfo),
+            message: "Resident Updated Successfully"
+          });
       })
     }
 })
@@ -348,7 +351,7 @@ if (req.body && req.body !== '' && req.body !== null){
     var name = info.file.name;*/
       bucket.upload({
         Body: buf,
-        Key: `CompanyChop/${req.body.account}/CHOP`,
+        Key: `CompanyChop/${req.body.account}/CHOP.png`,
         ACL: 'public-read'
       }, function(err, data1) {
         if (err) {
