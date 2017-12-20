@@ -193,6 +193,7 @@ router.get('/currentMeetings', (req, res) => {
 })
 /*Voting for a particular Meeting's Poll*/
 router.post('/vote', (req, res) => {
+  console.log('REEQ', req.body);
   const residentId = "5a335e49fbb210c93ff37d66"
   const body = { hkid: "0",
   pollId: "5a3221dfc508057f5352d86c",
