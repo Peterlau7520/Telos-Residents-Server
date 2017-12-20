@@ -16,6 +16,7 @@ const UserAnswers = models.UserAnswers;
 
 router.get('/allSurveys', (req, res) => {
     const promiseArr =[]
+
     const estateName =  "HKU" //req.user.estateName
   Survey.find().lean()
   .then(function(survey, err) {
