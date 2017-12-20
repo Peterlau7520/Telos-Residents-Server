@@ -16,27 +16,27 @@ const UserAnswers = models.UserAnswers;
 
 router.get('/allSurveys', (req, res) => {
     const promiseArr =[]
-    const estateName = req.user.estateName
-  Survey.find({estate: estateName}).lean()
+    const estateName =  "HKU" //req.user.estateName
+  Survey.find().lean()
   .then(function(survey, err) {
+    console.log(survey, "survey")
     if(survey.length){
         var todayDate = new Date()
-        promiseArr.push(new Promise(function(resolve, reject){
         _.forEach(survey, function(surv, index) {
+        promiseArr.push(new Promise(function(resolve, reject){
         Question.find({surveyId: surv._id}).populate('optionIds').lean()
             .then(function(que, err){
             surv.question = que
             resolve(survey)
         })     
-        });
         }))
+        });
         var list = ''
         Promise.all(promiseArr)
         .then(function(data, err){
             list = data[0]
             console.log(data, "data")
             _.forEach(data[0], function(sur, index) {
-                console.log(sur, "sur")
             var currentDate = moment(new Date());
             currentDate = currentDate.format("D/MM/YYYY");
             var now1 = moment(new Date(sur.effectiveTo));
