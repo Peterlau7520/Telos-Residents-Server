@@ -139,22 +139,12 @@ router.post('/login', (req, res) => {
           if(req.body.password !== user.password){
             res.json({success : false, message: "密碼不正確 | Wrong Password"});
           }else{
-            if(user.registered == true){
               var userInfo = setUserInfo(user);
               res.json({
                 success : true,
                 token:generateToken(userInfo),
-                info: userInfo
+                user: userInfo
               });
-            }
-            else{
-              var userInfo = setUserInfo(user);
-              res.json({
-                success : true,
-                token:generateToken(userInfo),
-                info: userInfo
-              });
-            }
           }
 
       }
