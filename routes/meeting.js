@@ -239,9 +239,8 @@ router.post('/vote', (req, res) => {
         }  
       })
     }else{
-      console.log("HKID does not match")
       res.json({
-          success : true,
+          success : false,
           message: "HKID Does Not Match"
         });
     }

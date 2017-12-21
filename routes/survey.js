@@ -18,7 +18,7 @@ router.get('/allSurveys', (req, res) => {
     const promiseArr =[]
 
     const estateName =  "HKU" //req.user.estateName
-  Survey.find().lean()
+  Survey.find({estate: estateName}).lean()
   .then(function(survey, err) {
     console.log(survey, "survey")
     if(survey.length){
