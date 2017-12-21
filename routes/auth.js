@@ -51,6 +51,7 @@ function setUserInfo(request){
     estateName: request.estateName,
     unit: request.unit,
     nature: request.nature,
+    registered: request.registered,
     numberOfOwners: request.numberOfOwners,
     proxyAppointed: request.proxyAppointed
   };
@@ -130,9 +131,8 @@ router.post('/login', (req, res) => {
       if(!user){
           res.json({
           success : false,
-          message : "Account Does Not Exist"
+          message : "Account does not exist | 賬戶不存在"
         });
-        // res.status(404).send({error: 'Login Failed. Try again.'});
       }
       else{
           console.log(user.password);
@@ -145,8 +145,7 @@ router.post('/login', (req, res) => {
                 success : true,
                 // token: 'JWT ' + genserateToken(userInfo),
                 token:generateToken(userInfo),
-                user: userInfo,
-                registered: true
+                user: userInfo
               });
             }
             else{
@@ -155,10 +154,7 @@ router.post('/login', (req, res) => {
                 success : true,
                 // token: 'JWT ' + generateToken(userInfo),
                 token:generateToken(userInfo),
-                user: userInfo,
-                registered: false,
-                nature: user.nature,
-                numberOfOwners: user.numberOfOwners,
+                user: userInfo
               });
             }
           }
