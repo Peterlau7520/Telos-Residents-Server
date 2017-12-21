@@ -91,7 +91,7 @@ router.post('/submitSurveys', (req, res) => {
     .then(function(data, err){
       console.log(data)
       if(err) res.send(err)
-        Resident.update({_id: req.body.residentId,
+        Resident.update({_id: req.body.userId,
           $push: {
             surveys: data[0].surveyId
           }})
