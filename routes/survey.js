@@ -14,11 +14,9 @@ const Options = models.Options;
 const Resident = models.Resident;
 const UserAnswers = models.UserAnswers;
 
-router.get('/allSurveys', (req, res) => {
-    const promiseArr =[]
-
-    const estateName =  "HKU" //req.user.estateName
-  Survey.find({estate: estateName}).lean()
+router.post('/allSurveys', (req, res) => {
+  const promiseArr =[];
+  Survey.find({estate: req.body.estateName}).lean()
   .then(function(survey, err) {
     console.log(survey, "survey")
     if(survey.length){
@@ -67,10 +65,10 @@ router.get('/allSurveys', (req, res) => {
     })
 
 router.post('/submitSurveys', (req, res) => {
-  const residentId = "5a32175c61469e03284a03f2"
-  const body = { surveyId: '5a3248c1a58fd0e0d0e8dcc0',
-  questions: [{questionId: "5a3248f8a58fd0e0d0e8dd02", optionId: "5a32491da58fd0e0d0e8dd3f"}],
-  userId: '5a32175c61469e03284a03f2' }
+  // const body = { 
+  //   surveyId: '5a3248c1a58fd0e0d0e8dcc0',
+  //   questions: [{questionId: "5a3248f8a58fd0e0d0e8dd02", optionId: "5a32491da58fd0e0d0e8dd3f"}],
+  //   userId: '5a32175c61469e03284a03f2' }
   const promiseArr = []
   const questions = body.questions
     promiseArr.push(new Promise(function(resolve, reject){
