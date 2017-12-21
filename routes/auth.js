@@ -126,35 +126,33 @@ router.post('/login', (req, res) => {
     console.log("reached here", req.body);
     Resident.findOne({'account' : req.body.account}, function(err, user){
       if(err){
-        res.json({success : false, message: "Network Error"});
+        res.json({success : false, message: "網絡連接有誤 | Network Error"});
       }
       if(!user){
           res.json({
           success : false,
-          message : "Account does not exist | 賬戶不存在"
+          message : "賬戶不存在 | Account does not exist"
         });
       }
       else{
           console.log(user.password);
           if(req.body.password !== user.password){
-            res.json({success : false, message: "Wrong Password"});
+            res.json({success : false, message: "密碼不正確 | Wrong Password"});
           }else{
             if(user.registered == true){
               var userInfo = setUserInfo(user);
               res.json({
                 success : true,
-                // token: 'JWT ' + genserateToken(userInfo),
                 token:generateToken(userInfo),
-                user: userInfo
+                info: userInfo
               });
             }
             else{
               var userInfo = setUserInfo(user);
               res.json({
                 success : true,
-                // token: 'JWT ' + generateToken(userInfo),
                 token:generateToken(userInfo),
-                user: userInfo
+                info: userInfo
               });
             }
           }
@@ -168,12 +166,12 @@ router.post('/changePassword', (req, res) => {
     console.log("reached here", req.body);
     Resident.findOne({'account' : req.body.account}, function(err, user){
       if(err){
-        res.json({success : false, message: "Network Error"});
+        res.json({success : false, message: "網絡連接有誤 | Network Error"});
       }
       if(!user){
         res.json({
           success : false,
-          message : "Account Does Not Exist"
+          message : "賬戶不存在 | Account does not exist"
         });
         // res.status(404).send({error: 'Login Failed. Try again.'});
       }
