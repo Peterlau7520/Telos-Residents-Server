@@ -128,6 +128,7 @@ router.post('/login', (req, res) => {
       if(err){
         res.json({success : false, message: "網絡連接有誤 | Network Error"});
       }
+      console.log(user, "user")
       if(!user){
           res.json({
           success : false,
@@ -234,11 +235,11 @@ else {
       update(req, res, '');
     }
     function update(req, res, data){
-      console.log("reeeeee", req.body.account)
       Resident.update({account: req.body.account},
         {$set: 
           { hkid: data.hkids,
             hkidImage: data.image,
+            registered: true
           }
         }, {
         new: true
@@ -258,10 +259,10 @@ else {
 router.post('/saveSignature', (req, res) => {
   console.log(req.body, "rrrrr")
 const promiseArr = []
- var avatarS3Url = '';
+ var avatarS3Url = [];
 if (req.body.signatures && req.body.signatures !== '' && req.body.signatures !== null){
+   forEach(req.body.signatures, function(item, key, a){
   promiseArr.push(new Promise(function(resolve, reject){
-    forEach(req.body.signatures, function(item, key, a){
       console.log(key, "key")
     var originalBlob = item.image
     var regex       = /^data:.+\/(.+);base64,(.*)$/;
@@ -277,30 +278,31 @@ if (req.body.signatures && req.body.signatures !== '' && req.body.signatures !==
           console.log(err)
         }
         if(data1) {
-          console.log(data1)
-          avatarS3Url = data1.Location
+          avatarS3Url.push(data1.Location)
+           console.log(avatarS3Url, "avatarS3Url")
           resolve(avatarS3Url)
         }
       })
-
-    })
   }))
+   })
+  Promise.all(promiseArr)
+    .then(function(data, err){
+      console.log(data[0], "data")
+      update(req, res, data[0]);
+    })
 }
 else {
       update(req, res, '');
     }
-    Promise.all(promiseArr)
-    .then(function(data, err){
-      update(req, res, data);
-    })
+    
     function update(req, res, fileLinks){
-      const body = {residentId: "5a335e49fbb210c93ff37d66"} //req.body
+      console.log(req.body.meeting_id, "meeting_id", fileLinks)
       Resident.update({account: req.body.signatures[0].account},
         {$set: 
           { 
             signature: fileLinks,
           },
-          $push:{
+          $addToSet:{
             proxyAppointed: req.body.meeting_id
           }
         }, {
@@ -360,6 +362,7 @@ else {
       Resident.update({account: req.body.account},
         {$set: 
           { chopImage: fileLinks,
+            registered: true
           }
         }, {
         new: true

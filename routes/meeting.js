@@ -102,7 +102,7 @@ router.get('/pastMeetings', (req, res) => {
 })
 /*Finding the current meeeting*/
 router.get('/currentMeetings', (req, res) => {
-  const estateName = "HKU" // req.user.estateName
+  const estateName = req.body.estateName
     Meeting.find({estate: estateName}).populate('polls').lean().then(function(meetings, err){
         const promiseArr = []
         const proxyAppointed = []
@@ -162,10 +162,10 @@ router.get('/currentMeetings', (req, res) => {
                }     
                      var startTime = moment.utc(new Date(item.startTime));
                      item.startTime =  startTime.format("MM/DD/YYYY hh:mm a");
-                      if(item.view > 0 ){
+                      if(item.views > 0 ){
                         console.log("hhhh")
-                        Resident.update({email: req.email,
-                          $push: {
+                        Resident.update({account: req.body.account,
+                          $addToSet: {
                             proxyAppointed: item._id
                           }
                           })
@@ -183,7 +183,10 @@ router.get('/currentMeetings', (req, res) => {
             }))
             Promise.all(promiseArr)
             .then(function(data){
-              res.json({currentMeetings: data[0], success: true})             
+              Resident.findOne({account: req.body.account})
+              .then(function(resident, err){
+              res.json({currentMeetings: data[0], resident: resident, success: true}) 
+              })            
             })
         }
        else{
@@ -193,19 +196,17 @@ router.get('/currentMeetings', (req, res) => {
 })
 /*Voting for a particular Meeting's Poll*/
 router.post('/vote', (req, res) => {
-
   console.log(req.body, "body")
    Resident.findOne({account: req.body.account,  hkid: req.body.HKID })
    .then(function(data, err){
     console.log(data, "if data")
-    if(data){
+    if(data != null){
       Poll.find({ _id: req.body.pollID, voted: data._id  })
       .then(function(voted, err){
         console.log("voted", voted)
         if(voted.length != 0){
             res.json({
             success : false,
-              // token: 'JWT ' + generateToken(userInfo),
             message: "Already Voted"
           });
         }
@@ -232,7 +233,6 @@ router.post('/vote', (req, res) => {
                 console.log("pass", pass)
                 res.json({
                   success : true,
-                    // token: 'JWT ' + generateToken(userInfo),
                   message: "choice has just been saved"
                 });
               })
@@ -243,11 +243,23 @@ router.post('/vote', (req, res) => {
       console.log("HKID does not match")
       res.json({
           success : true,
-            // token: 'JWT ' + generateToken(userInfo),
           message: "HKID Does Not Match"
         });
     }
        })
+})
+
+router.post('/views', (req, res) => {
+   Meeting.update({_id:  req.body.meetingId},
+    {$inc: 
+      { views: 1
+      }
+    }, {
+      new: true
+  })
+   .then(function(resident, err){
+    res.json({message: "Successfully Viewed" , success: true})
+   })
 })
 
 module.exports = router;
