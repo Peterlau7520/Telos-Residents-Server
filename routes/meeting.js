@@ -22,13 +22,12 @@ AWS.config.update({
 const bucket = new AWS.S3({params: {Bucket: BucketName}});
 
 /*Finding the past meeeting*/
-router.get('/pastMeetings', (req, res) => {
-  const estateName = "HKU" // req.user.estateName
+router.post('/pastMeetings', (req, res) => {
+  const estateName = req.body.estateName
     Meeting.find({estate: estateName}).populate('polls').lean().then(function(meetings, err){
         const promiseArr = []
         var pastMeetings = []
-
-          if(meetings.length > 0) {
+        if(meetings.length > 0) {
             promiseArr.push(new Promise(function(resolve, reject){
                forEach(meetings, function(item, key, a){
                   if( item.fileLinks && item.fileLinks.length > 0) {
@@ -101,7 +100,7 @@ router.get('/pastMeetings', (req, res) => {
     })
 })
 /*Finding the current meeeting*/
-router.get('/currentMeetings', (req, res) => {
+router.post('/currentMeetings', (req, res) => {
   const estateName = req.body.estateName
     Meeting.find({estate: estateName}).populate('polls').lean().then(function(meetings, err){
         const promiseArr = []
