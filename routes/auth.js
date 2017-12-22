@@ -249,7 +249,7 @@ else {
         res.json({
           success : true,
             // token: 'JWT ' + generateToken(userInfo),
-          message: "Resident Updated Successfully"
+          message: "Information Updated Successfully"
         });
       })
     }
