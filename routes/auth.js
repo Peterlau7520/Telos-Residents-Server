@@ -212,7 +212,7 @@ if (req.body.hkids && req.body.hkids !== '' && req.body.hkids !== null){
     hkids.push(item.hkid)
       bucket.upload({
         Body: buf,
-        Key: `HKIDs/${item.hkid}/HKId.png`,
+        Key: `${req.body.estateName}/HKIDs/${item.hkid}/HKId.png`,
         ACL: 'public-read'
       }, function(err, data1) {
         if (err) {
