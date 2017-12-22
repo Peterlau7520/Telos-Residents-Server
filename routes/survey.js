@@ -15,10 +15,10 @@ const Resident = models.Resident;
 const UserAnswers = models.UserAnswers;
 
 router.post('/allSurveys', (req, res) => {
+  console.log(req.body)
   const promiseArr =[];
   Survey.find({estate: req.body.estateName}).lean()
   .then(function(survey, err) {
-    console.log(survey, "survey")
     if(survey.length){
         var todayDate = new Date()
         _.forEach(survey, function(surv, index) {
@@ -34,7 +34,6 @@ router.post('/allSurveys', (req, res) => {
         Promise.all(promiseArr)
         .then(function(data, err){
             list = data[0]
-            console.log(data, "data")
             _.forEach(data[0], function(sur, index) {
             var currentDate = moment(new Date());
             currentDate = currentDate.format("D/MM/YYYY");
@@ -47,6 +46,11 @@ router.post('/allSurveys', (req, res) => {
             var now = moment(new Date(sur.postDate));
             list[index].postDate =  now.format("D/MM/YYYY");
         })
+            Resident.findOne({_id: req.body.userId})
+            .then(function(user, err){
+              console.log(user)
+              res.json({survey: list, success: true, completedSurveys: user.surveys})
+            })
         // var uniqueList = _.filter(survey, function(item, key, a){ 
         //  Question
         // .find({surveyId: item._id}).populate('optionIds')
@@ -55,16 +59,17 @@ router.post('/allSurveys', (req, res) => {
         // })  
         //     return (todayDate != item.effectiveTo && todayDate > item.effectiveTo) ? item._id : ''
         // });
-        res.json({survey: list, success: true})
+        
     })
     }
     else{
         res.json({message: "No Survey Found" , success: false})
     }
-    })
-    })
+  })
+})
 
 router.post('/submitSurveys', (req, res) => {
+  console.log(req.body, "rrrrrrr")
   // const body = { 
   //   surveyId: '5a3248c1a58fd0e0d0e8dcc0',
   //   questions: [{questionId: "5a3248f8a58fd0e0d0e8dd02", optionId: "5a32491da58fd0e0d0e8dd3f"}],
@@ -85,17 +90,20 @@ router.post('/submitSurveys', (req, res) => {
             resolve(ans)
           })
       })
-
     }))
     Promise.all(promiseArr)
     .then(function(data, err){
       console.log(data)
       if(err) res.send(err)
-        Resident.update({_id: req.body.userId,
-          $push: {
-            surveys: data[0].surveyId
-          }})
+       Resident.update({_id:  req.body.userId},
+        {$push: 
+          { surveys: data[0].surveyId
+          }
+        }, {
+        new: true
+        })
         .then(function(survey, err){
+          console.log("yesssssss", survey)
         res.json({message: "Survey Completed Successfully", success: true})
       })
     })
