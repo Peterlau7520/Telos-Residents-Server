@@ -163,11 +163,12 @@ router.post('/currentMeetings', (req, res) => {
                      item.startTime =  startTime.format("MM/DD/YYYY hh:mm a");
                       if(item.views > 0 ){
                         console.log("hhhh")
-                        Resident.update({account: req.body.account,
-                          $addToSet: {
+                        Resident.update({account: req.body.account},
+                          {$addToSet: {
                             proxyAppointed: item._id
                           }
-                          })
+                          }
+                          )
                         .then(function(Resident, err){
                           console.log(Resident)
                         })

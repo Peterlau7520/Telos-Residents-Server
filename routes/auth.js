@@ -167,16 +167,15 @@ router.post('/changePassword', (req, res) => {
         // res.status(404).send({error: 'Login Failed. Try again.'});
       }
       else{
-        user.comparePassword(req.body.oldPassword, function(err, isMatch){
-          if(!isMatch){
-            res.json({success : false, message: "Old Password Does Not Match"});
+          if( req.body.oldPassword !== user.password){
+            res.json({success : false, message: "舊密碼不符 | Old password does not match"});
           }else{
             const saltRounds = 5;
-            var salt = bcrypt.genSaltSync(saltRounds);
-            var hash = bcrypt.hashSync(req.body.password, salt);
-            console.log(hash, "pass")
+            // var salt = bcrypt.genSaltSync(saltRounds);
+            // var hash = bcrypt.hashSync(req.body.password, salt);
+            // console.log(hash, "pass")
             Resident.update({_id: user._id},
-             {$set: { password: hash }
+             {$set: { password: req.body.password }
             }, {
               new: true
             })
@@ -184,11 +183,10 @@ router.post('/changePassword', (req, res) => {
             res.json({
               success : true,
               // token: 'JWT ' + generateToken(userInfo),
-              message: "Password Updated Successfully"
+              message: "密碼更新成功 | Password updated successfully"
             });
           })
           }
-       })
       }
    })
 })

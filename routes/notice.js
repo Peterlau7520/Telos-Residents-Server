@@ -14,10 +14,10 @@ AWS.config.update({
 });
 
 const bucket = new AWS.S3({params: {Bucket: BucketName}});
-router.get('/noticeBoard', (req, res) => {
-  const estateName =  "HKU" //req.user.estateName
+router.post('/noticeBoard', (req, res) => {
+  console.log(req.body);
    Notice
-  .find({estate: estateName})
+  .find({estate: req.body.estateName})
   .lean()
   .then(function(notices, err) {
     if(notices.length){
@@ -29,7 +29,7 @@ router.get('/noticeBoard', (req, res) => {
     var uniqueList2 = _.filter(notices, function(item, key, a){   
         if(item.fileLinks.length > 0) {
               let fileLinks = [];
-                let Key = `${estateName}/Notices/${item.title}/${item.fileLinks[0]}`;
+                let Key = `${req.body.estateName}/Notices/${item.title}/${item.fileLinks[0]}`;
                 fileLinks.push({
                   name: item.fileLinks[0],
                   url: "https://"+BucketName+".s3.amazonaws.com/"+Key

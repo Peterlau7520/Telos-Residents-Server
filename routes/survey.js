@@ -70,10 +70,6 @@ router.post('/allSurveys', (req, res) => {
 
 router.post('/submitSurveys', (req, res) => {
   console.log(req.body, "rrrrrrr")
-  // const body = { 
-  //   surveyId: '5a3248c1a58fd0e0d0e8dcc0',
-  //   questions: [{questionId: "5a3248f8a58fd0e0d0e8dd02", optionId: "5a32491da58fd0e0d0e8dd3f"}],
-  //   userId: '5a32175c61469e03284a03f2' }
   const promiseArr = []
   const questions = req.body.questions
     promiseArr.push(new Promise(function(resolve, reject){
