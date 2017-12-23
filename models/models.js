@@ -7,7 +7,7 @@ const connect = process.env.MONGODB_URI ||"mongodb://upwork:upwork@ds117625.mlab
 mongoose.connect(connect);
 
 const Schema = mongoose.Schema;
-
+//RESIDENT
 const residentSchema = new Schema({
     name: String,
     email: String,
@@ -51,16 +51,16 @@ const residentSchema = new Schema({
 });
 
 
+//ESTATE
 const estateSchema = new Schema({
-  estateName: String,
-  username: String,
-  password: String,
-  emailAddress: String,
-  chairmanName: String,
-  currentPolls: [{ type: Schema.Types.ObjectId, ref: 'Poll' }],
-  pastPolls: [{ type: Schema.Types.ObjectId, ref: 'Poll' }],
-  inviteCode : String,
-  surveys: [
+    estateName: String,
+    estateNameDisplay: String,
+    estateNameChn: String,
+    username: String,
+    password: String,
+    emailAddress: String,
+    chairmanName: String,
+    surveys: [
         {
             type: Schema.Types.ObjectId,
             ref: 'Survey'
@@ -92,6 +92,7 @@ const estateSchema = new Schema({
     ]
 });
 
+//POLL
 const pollSchema = new Schema({
     projectName: String,
     projectNameChn: String,
@@ -147,6 +148,7 @@ const questionSchema = new Schema({
     questionChn: String,
     optionIds: [{ type: Schema.ObjectId, ref: 'Options' }],
     surveyId: { type: Schema.ObjectId, ref: 'Survey' },
+    order: String,
 })
 
 const optionSchema = new Schema({
@@ -188,49 +190,6 @@ const meetingSchema = new Schema({
     views: { type: String, default: 0 },
 })
 
-residentSchema.pre('save', function(next){
- 
-    var user = this;
-     var SALT_FACTOR = 5;
-
-     if(!user.isModified('password')){
-         return next();
-     }
- 
-     bcrypt.genSalt(SALT_FACTOR, function(err, salt){
- 
-         if(err){
-             return next(err);
-         }
- 
-        bcrypt.hash(user.password, salt, null, function(err, hash){
- 
-             if(err){
-                 return next(err);
-            }
- 
-            user.password = hash;
-            next();
- 
-         });
- 
-    });
- 
- });
- 
- residentSchema.methods.comparePassword = function(passwordAttempt, cb){
- 
-    bcrypt.compare(passwordAttempt, this.password, function(err, isMatch){
- 
-         if(err){
-             return cb(err);
-         } else {
-             cb(null, isMatch);
-         }
-     });
- 
- }
-
 const Resident = mongoose.model('Resident', residentSchema);
 const Estate = mongoose.model('Estate', estateSchema);
 const Poll = mongoose.model('Poll', pollSchema);
@@ -253,3 +212,47 @@ module.exports = {
   UserAnswers,
   Options,
 }
+
+
+// residentSchema.pre('save', function(next){
+ 
+//     var user = this;
+//      var SALT_FACTOR = 5;
+
+//      if(!user.isModified('password')){
+//          return next();
+//      }
+ 
+//      bcrypt.genSalt(SALT_FACTOR, function(err, salt){
+ 
+//          if(err){
+//              return next(err);
+//          }
+ 
+//         bcrypt.hash(user.password, salt, null, function(err, hash){
+ 
+//              if(err){
+//                  return next(err);
+//             }
+ 
+//             user.password = hash;
+//             next();
+ 
+//          });
+ 
+//     });
+ 
+//  });
+ 
+//  residentSchema.methods.comparePassword = function(passwordAttempt, cb){
+ 
+//     bcrypt.compare(passwordAttempt, this.password, function(err, isMatch){
+ 
+//          if(err){
+//              return cb(err);
+//          } else {
+//              cb(null, isMatch);
+//          }
+//      });
+ 
+//  }
