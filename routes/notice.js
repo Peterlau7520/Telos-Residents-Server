@@ -7,6 +7,16 @@ const forEach = require('async-foreach').forEach;
 const dateFormat = require('dateformat');
 const BucketName = 'telospdf';
 var AWS = require('aws-sdk');
+
+function compareDate(noticeA,noticeB){
+  if (noticeA.postDate > noticeB.postDate)
+      return -1;
+  if (noticeA.postDate < noticeB.postDate)
+      return 1;
+  return 0;
+}
+
+
 AWS.config.update({
   accessKeyId: 'AKIAIMLMZLII2XCKU6UA',
   secretAccessKey: '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',
@@ -38,7 +48,8 @@ router.post('/noticeBoard', (req, res) => {
             }
     return (!(todayDate != new Date(item.endTime) && todayDate > new Date(item.endTime))) ? item._id : ''
        });
-
+       uniqueList.sort(compareDate);
+       uniqueList2.sort(compareDate);
       res.json({message: "Notices Found", success: true, notices: uniqueList2});
     }else{
             res.json({message: "No Notices Found", success: false});
