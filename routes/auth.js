@@ -141,11 +141,21 @@ router.post('/login', (req, res) => {
             res.json({success : false, message: "密碼不正確 | Wrong Password"});
           }else{
               var userInfo = setUserInfo(user);
-              res.json({
+              Resident.update({account: req.body.account},
+              {$set: 
+                { deviceToken: req.body.deviceToken
+                }
+              }, {
+              new: true
+              })
+              .then(function(data, err){
+                if(err) res.send(err)
+                res.json({
                 success : true,
                 token:generateToken(userInfo),
                 user: userInfo
               });
+            })
           }
 
       }
@@ -335,7 +345,7 @@ if (req.body && req.body !== '' && req.body !== null){
     var name = info.file.name;*/
       bucket.upload({
         Body: buf,
-        Key: `CompanyChop/${req.body.account}/CHOP.png`,
+        Key: `${req.body.estateName}/CompanyChop/${req.body.account}/CHOP.png`,
         ACL: 'public-read'
       }, function(err, data1) {
         if (err) {
