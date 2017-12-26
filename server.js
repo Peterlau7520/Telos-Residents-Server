@@ -45,8 +45,6 @@ app.use('/', authRoutes);
 app.use(function(req, res, next) {
   // check header or url parameters or post parameters for token
   var token = req.headers['authorization'];
-  console.log(req.headers)
-  console.log(token);
   if (!token){
     console.log("token failiure");
     res.json({
