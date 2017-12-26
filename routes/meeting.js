@@ -107,6 +107,7 @@ router.post('/currentMeetings', (req, res) => {
         const promiseArr = []
         const proxyAppointed = []
         var currentMeetings = []
+        var pollMeeting_title = '';
         //check whether telos is appointed
         console.log(meetings);
         if(meetings.length > 0) {
@@ -120,6 +121,7 @@ router.post('/currentMeetings', (req, res) => {
                         titleLink = item.title;
                         titleLink = titleLink.trim();
                         titleLink = titleLink.replace(/ /g,'');
+                        pollMeeting_title = titleLink;
                         }
                         if(item.fileLinks[0]){
                             fileLinksLink = item.fileLinks[0]
@@ -147,13 +149,15 @@ router.post('/currentMeetings', (req, res) => {
                         if(poll.title){
                         titleLink = poll.title
                         titleLink = titleLink.trim();
+                        titleLink = titleLink.replace(/ /g,'');
                         }
                         if(name){
                             fileLinksLink = name
                             fileLinksLink = fileLinksLink.trim();
+                            fileLinksLink = fileLinksLink.replace(/ /g,'');
                         }
-                          let Key = `${estateName}/${titleLink}/${fileLinksLink}`;
-                          // let Key = `${req.user.estateName}/${titleLink}/${fileLinksLink}`;
+                          let Key = `${estateName}/${pollMeeting_title}/${titleLink}/${fileLinksLink}`;
+                         
                           polefileLinks.push({
                             name: name,
                             url: "https://"+BucketName+".s3.amazonaws.com/"+Key
