@@ -89,7 +89,8 @@ const estateSchema = new Schema({
             type: Schema.Types.ObjectId,
             ref: 'Notice'
         }
-    ]
+    ],
+    blockArray: []
 });
 
 //POLL
