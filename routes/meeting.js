@@ -117,12 +117,14 @@ router.post('/currentMeetings', (req, res) => {
                       var titleLink = ''
                       var fileLinksLink = ''
                         if(item.title){
-                        titleLink = item.title
+                        titleLink = item.title;
                         titleLink = titleLink.trim();
+                        titleLink = titleLink.replace(/ /g,'');
                         }
                         if(item.fileLinks[0]){
                             fileLinksLink = item.fileLinks[0]
                             fileLinksLink = fileLinksLink.trim();
+                            fileLinksLink = fileLinksLink.replace(/ /g,'');
                         }
                         let Key = `${estateName}/${titleLink}/${fileLinksLink}`;
                         // let Key = `${req.user.estateName}/${titleLink}/${fileLinksLink}`;
