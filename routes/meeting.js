@@ -96,7 +96,7 @@ router.post('/pastMeetings', (req, res) => {
         }
          else{
               console.log('No meetings found');
-              res.json({message: "No Meetings Found", success: true})
+              res.json({message: "No Meetings Found", success: false})
           }
     })
 })
@@ -193,7 +193,7 @@ router.post('/currentMeetings', (req, res) => {
         }
        else{
              console.log('No meetings found'); 
-            res.json({message: "No Meetings Found", success: true})
+            res.json({message: "No Meetings Found", success: false})
         }
     })
 })
