@@ -107,6 +107,7 @@ router.post('/currentMeetings', (req, res) => {
         const proxyAppointed = []
         var currentMeetings = []
         //check whether telos is appointed
+        console.log(meetings);
         if(meetings.length > 0) {
             promiseArr.push(new Promise(function(resolve, reject){
                forEach(meetings, function(item, key, a){
