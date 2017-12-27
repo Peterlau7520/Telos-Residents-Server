@@ -22,8 +22,13 @@ const CommentReport = models.CommentReport;
 
 
 router.post('/getForum', (req,res) => {
-    //POPULATE ALL THE POSTS AND COMMENTS 
-
+    Post.find()
+    .populate('comments')
+    .populate('postedBy')
+    .populate('commentedBy')
+    then(function(post) {
+        res.json(post)
+    })
 
 
 })
