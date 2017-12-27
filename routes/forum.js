@@ -22,15 +22,25 @@ const CommentReport = models.CommentReport;
 
 
 router.post('/getForum', (req,res) => {
-    Post.find()
+    Post.find({
+        estateName: req.body.estateName
+    })
     .populate('comments')
     .populate('postedBy')
     .populate('commentedBy')
-    then(function(post) {
-        res.json(post)
+    then(function(err,posts) {
+        if(err){
+            res.json({
+                success: false,
+                message: "Network errors"
+            })
+        }
+        res.json({
+            success:true,
+            posts: posts,
+            message: "Liked successfully"
+        })
     })
-
-
 })
 
 router.post('/likeComment', (req,res) => {
@@ -44,8 +54,16 @@ router.post('/likeComment', (req,res) => {
                new: true 
              })
     .then(function(comm, err){
-        res.json()
-        //YOUR WORK HERE
+        if(err){
+            res.json({
+                success: false,
+                message: "Network errors"
+            })
+        }
+        res.json({
+            success:true,
+            message: "Liked successfully"
+        })
     })
 })
 
@@ -54,13 +72,22 @@ router.post('/likePost', (req,res) => {
     Post.update({_id: postId
              }, {
                $push: { 
-                  likedBy: req.user._id,
+                  likedBy: req.body.userId,
                }
              },{ 
                new: true 
              })
     .then(function(comm, err){
-        res.json()
+        if(err){
+            res.json({
+                success: false,
+                message: "Network errors"
+            })
+        }
+        res.json({
+            success:true,
+            message: "Liked successfully"
+        })
     })
 })
 
@@ -80,8 +107,16 @@ router.post('/newPost', (req,res)=>{
             lastCommentedTime: new Date(),
         });
         post.save(function(err, post){
-            if(err) res.send(err);
-          res.json();
+            if(err){
+                res.json({
+                    success: false,
+                    message: "Network errors"
+                })
+            }
+            res.json({
+                success:true,
+                message: "Posted successfully"
+            })
 
         })
     })
@@ -116,8 +151,16 @@ router.post('/newComment', (req,res)=>{
                new: true 
              })
             .then(function(post,err){
-                if(err) res.send(err);
-                res.json()
+                if(err){
+                    res.json({
+                        success: false,
+                        message: "Network errors"
+                    })
+                }
+                res.json({
+                    success:true,
+                    message: "Commented successfully"
+                })
             })
         })
     })
@@ -133,8 +176,16 @@ router.post('/reportPost', (req,res)=> {
                 reportedPost: postId,
                 reportedBy: user._id
             }).save(function(err, PostReport){
-                if(err) res.send(err);
-               res.redirect("/getForum")
+                if(err){
+                    res.json({
+                        success: false,
+                        message: "Network errors"
+                    })
+                }
+                res.json({
+                    success:true,
+                    message: "Reported successfully"
+                })
             })
     })
 
@@ -151,8 +202,16 @@ router.post('/reportComment', (req,res)=> {
                 reportedComment: commentId,
                 reportedBy: user._id
             }).save(function(err, PostReport){
-                 if(err) res.send(err);
-               res.json()
+                if(err){
+                    res.json({
+                        success: false,
+                        message: "Network errors"
+                    })
+                }
+                res.json({
+                    success:true,
+                    message: "Reported successfully"
+                })
             })
     })
   })
