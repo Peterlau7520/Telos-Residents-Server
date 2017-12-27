@@ -38,7 +38,7 @@ router.post('/getForum', (req,res) => {
         res.json({
             success:true,
             posts: posts,
-            message: "Liked successfully"
+            message: "Retrieved forum successfully"
         })
     })
 })
@@ -64,7 +64,7 @@ router.post('/getCommentsByPostId', function(req,res){
         res.json({
             success:true,
             post: post,
-            message: "Liked successfully"
+            message: "Retrieve comments successfully"
         })
     })
 })
