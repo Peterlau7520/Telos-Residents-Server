@@ -57,12 +57,12 @@ function setUserInfo(request){
   };
 }
 
-/*function decrypt(text){
+function decrypt(text){
   var decipher = crypto.createDecipher(algorithm,password)
   var dec = decipher.update(text,'hex','utf8')
   dec += decipher.final('utf8');
   return dec;
-}*/
+}
 
 router.post('/register', (req, res) => {
     console.log("reached route register", req.body);
@@ -162,7 +162,32 @@ router.post('/login', (req, res) => {
    })
 })
 
-
+//WJT Authentication
+router.use(function(req, res, next) {
+  // check header or url parameters or post parameters for token
+  var token = req.headers['authorization'];
+  if (!token){
+    console.log("token failiure");
+    res.json({
+      success : false,
+      message : "Invalid token"
+    })
+  }
+  // token = token.replace('Bearer ', '');
+  jwt.verify(token, 'telosresidentserver', function(err, user) {
+    if (err) {
+      console.log(err)
+      res.json({
+        success: false,
+        message: 'Please Login'
+      });
+      next();
+    } else {
+      req.user = user; //set the user to req so other routes can use it
+      next();
+    }
+  });
+});
 router.post('/changePassword', (req, res) => {
     console.log("reached here", req.body);
     Resident.findOne({'account' : req.body.account}, function(err, user){
@@ -203,13 +228,13 @@ router.post('/changePassword', (req, res) => {
 
 
 router.post('/saveHKID', (req, res) => {
-console.log(req.body, "reqqqq")
-var hkids = []
-const promiseArr = []
-var info = req.body;
-var avatarS3Url = [];
-//var originalBlob = info.hkidsArray; 
-if (req.body.hkids && req.body.hkids !== '' && req.body.hkids !== null){
+  console.log(req.body, "reqqqq")
+  var hkids = []
+  const promiseArr = []
+  var info = req.body;
+  var avatarS3Url = [];
+  //var originalBlob = info.hkidsArray; 
+  if (req.body.hkids && req.body.hkids !== '' && req.body.hkids !== null){
   forEach(req.body.hkids, function(item, key, a){
   promiseArr.push(new Promise(function(resolve, reject){
     var originalBlob = item.image
@@ -265,41 +290,40 @@ else {
 
 
 router.post('/saveSignature', (req, res) => {
-  console.log(req.body, "rrrrr")
-const promiseArr = []
- var avatarS3Url = [];
-if (req.body.signatures && req.body.signatures !== '' && req.body.signatures !== null){
-   forEach(req.body.signatures, function(item, key, a){
-  promiseArr.push(new Promise(function(resolve, reject){
-      console.log(key, "key")
-    var originalBlob = item.image
-    var regex       = /^data:.+\/(.+);base64,(.*)$/;
-    var matches     = originalBlob.match(regex);
-    var base64Data  = matches && matches.length && matches[2] ? matches[2] : '';
-    var buf         = new Buffer(base64Data, 'base64');
-      bucket.upload({
-        Body: buf,
-        Key: `${item.estate}/OwnersSignature/${item.account}/signature${key}.png`,
-        ACL: 'public-read'
-      }, function(err, data1) {
-        if (err) {
-          console.log(err)
-        }
-        if(data1) {
-          avatarS3Url.push(data1.Location)
-           console.log(avatarS3Url, "avatarS3Url")
-          resolve(avatarS3Url)
-        }
-      })
-  }))
+  console.log(req.body, "rrrrr");
+  const promiseArr = [];
+  var avatarS3Url = [];
+  if (req.body.signatures && req.body.signatures !== '' && req.body.signatures !== null){
+    forEach(req.body.signatures, function(item, key, a){
+          promiseArr.push(new Promise(function(resolve, reject){
+            console.log(key, "key")
+        var originalBlob = item.image
+        var regex       = /^data:.+\/(.+);base64,(.*)$/;
+        var matches     = originalBlob.match(regex);
+        var base64Data  = matches && matches.length && matches[2] ? matches[2] : '';
+        var buf         = new Buffer(base64Data, 'base64');
+          bucket.upload({
+            Body: buf,
+            Key: `${item.estate}/OwnersSignature/${item.account}/signature${key}.png`,
+            ACL: 'public-read'
+          }, function(err, data1) {
+            if (err) {
+              console.log(err)
+            }
+            if(data1) {
+              avatarS3Url.push(data1.Location)
+              console.log(avatarS3Url, "avatarS3Url")
+              resolve(avatarS3Url)
+            }
+          })
+      }))
    })
   Promise.all(promiseArr)
     .then(function(data, err){
       console.log(data[0], "data")
       update(req, res, data[0]);
     })
-}
-else {
+  }else {
       update(req, res, '');
     }
     
@@ -385,8 +409,5 @@ else {
       })
     }
 })
-
-
-
 
 module.exports = router;

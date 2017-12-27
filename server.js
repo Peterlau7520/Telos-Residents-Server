@@ -22,7 +22,7 @@ const authRoutes = require('./routes/auth');
 const noticeRoutes = require('./routes/notice');
 const surveyRoutes = require('./routes/survey');
 const meetingRoutes = require('./routes/meeting')
-
+const forumRoutes = require('./routes/forum');
 
 // ----------------- AWS -----------------
 const AWS = require('aws-sdk');
@@ -42,35 +42,10 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 //----------------ROUTING----------------
 app.use('/', authRoutes);
-app.use(function(req, res, next) {
-  // check header or url parameters or post parameters for token
-  var token = req.headers['authorization'];
-  if (!token){
-    console.log("token failiure");
-    res.json({
-      success : false,
-      message : "Invalid token"
-    })
-  }
-  // token = token.replace('Bearer ', '');
-  jwt.verify(token, 'telosresidentserver', function(err, user) {
-    if (err) {
-      console.log(err)
-      res.json({
-        success: false,
-        message: 'Please Login'
-      });
-      next();
-    } else {
-      req.user = user; //set the user to req so other routes can use it
-      next();
-    }
-  });
-});
 app.use('/', noticeRoutes);
 app.use('/', surveyRoutes);
 app.use('/', meetingRoutes);
-
+app.use('/', forumRoutes);
 
 app.listen(process.env.PORT || 3000, function(){
   console.log("app successfully listening on port 3000");
