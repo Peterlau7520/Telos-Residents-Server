@@ -50,8 +50,8 @@ router.post('/getCommentsByPostId', function(req,res){
         estateName: req.body.estateName,
         id: postId
     })
-    .populate('Comment')
-    .populate('Resident')
+    .populate('comments')
+    .populate('commentedBy')
     .sort({commentedTime: -1})
     .then(function(post, err){
         console.log(post);
