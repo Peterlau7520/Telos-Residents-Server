@@ -221,7 +221,9 @@ router.post('/vote', (req, res) => {
         }
         else{
           Poll.update({_id: req.body.pollID},
-            { $addToSet:  {votingResults: {choice: req.body.option, resident: data._id}}
+            { $push:  {
+              votingResults: {choice: req.body.option, resident: data._id}
+              }
             }, {
             new: true
             })
