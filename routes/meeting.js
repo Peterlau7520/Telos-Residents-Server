@@ -225,7 +225,7 @@ router.post('/vote', (req, res) => {
             {$push: 
               { 
               votingResults: votingResult,
-              voted: data._id
+              // voted: data._id
               }
             }, {
             new: true
