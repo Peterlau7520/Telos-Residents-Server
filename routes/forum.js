@@ -45,6 +45,7 @@ router.post('/getForum', (req,res) => {
 
 router.post('/getCommentsByPostId', function(req,res){
     const postId = req.body.postId;
+    console.log(req.body);
     Post.find({
         estateName: req.body.estateName,
         id: postId
@@ -53,6 +54,7 @@ router.post('/getCommentsByPostId', function(req,res){
     .populate('Resident')
     .sort({commentedTime: -1})
     .then(function(post, err){
+        console.log(post);
         if(err){
             res.json({
                 success: false,
