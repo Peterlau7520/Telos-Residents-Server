@@ -22,15 +22,25 @@ const CommentReport = models.CommentReport;
 
 
 router.post('/getForum', (req,res) => {
-    Post.find()
+    Post.find({
+        estateName: req.body.estateName
+    })
     .populate('comments')
     .populate('postedBy')
     .populate('commentedBy')
-    then(function(post) {
-        res.json(post)
+    then(function(err,posts) {
+        if(err){
+            res.json({
+                success: false,
+                message: "Network errors"
+            })
+        }
+        res.json({
+            success:true,
+            posts: posts,
+            message: "Liked successfully"
+        })
     })
-
-
 })
 
 router.post('/likeComment', (req,res) => {
