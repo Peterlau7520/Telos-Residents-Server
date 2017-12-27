@@ -225,10 +225,11 @@ router.post('/vote', (req, res) => {
               { votingResults: [{choice: req.body.option, resident: data._id}] ,
               },*/
               $push: {
-                voted: data._id,
-                $addToSet: {votingResults: [{choice: req.body.option, resident: data._id}]}
-              }
-            }, {
+                voted: data._id
+              },
+              $push:{votingResults: [{choice: req.body.option, resident: data._id}]}
+            }
+            , {
             new: true
             })
             .then(function(poll, err){
