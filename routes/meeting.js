@@ -220,10 +220,11 @@ router.post('/vote', (req, res) => {
           });
         }
         else{
+          const votingResult = {choice: req.body.option, resident: data._id};
           Poll.update({_id: req.body.pollID},
             {$push: 
               { 
-              votingResults: {choice: req.body.option, resident: data._id},
+              votingResults: votingResult,
               voted: data._id
               }
             }, {
