@@ -28,7 +28,7 @@ router.post('/getForum', (req,res) => {
     .populate('comments')
     .populate('postedBy')
     .populate('commentedBy')
-    .then(function(err,posts) {
+    .then(function(posts,err) {
         console.log('errr',err)
         if(err){
             res.json({
