@@ -221,12 +221,11 @@ router.post('/vote', (req, res) => {
         }
         else{
           Poll.update({_id: req.body.pollID},
-            {
-              $push: 
+            {$push: 
               { 
               votingResults: {choice: req.body.option, resident: data._id}
-              },
-              $push: {
+              }},
+              {$push: {
                 voted: data._id
               }
             }, {
