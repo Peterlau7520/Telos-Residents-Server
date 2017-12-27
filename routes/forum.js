@@ -52,7 +52,7 @@ router.post('/getCommentsByPostId', function(req,res){
     .populate('Comment')
     .populate('Resident')
     .sort({commentedTime: -1})
-    .then(function(err, post){
+    .then(function(post, err){
         if(err){
             res.json({
                 success: false,
