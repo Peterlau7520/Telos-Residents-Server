@@ -220,14 +220,12 @@ router.post('/vote', (req, res) => {
           });
         }
         else{
+          console.log(data._id, 'idddddddddd')
           Poll.update({_id: req.body.pollID},
             {/*$set: 
               { votingResults: [{choice: req.body.option, resident: data._id}] ,
               },*/
-              $push: {
-                voted: data._id
-              },
-              $push:{votingResults: [{choice: req.body.option, resident: data._id}]}
+              $push: {voted: data._id,votingResults:{choice: req.body.option, resident: data._id}}
             }
             , {
             new: true
