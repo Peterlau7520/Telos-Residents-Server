@@ -220,14 +220,9 @@ router.post('/vote', (req, res) => {
           });
         }
         else{
+          var votingVAl = {choice: req.body.option, resident: data._id}
           Poll.update({_id: req.body.pollID},
-            {$set: 
-              { votingResults: {choice: req.body.option, resident: data._id} ,
-              },
-              $push: {
-                voted: data._id
-              }
-            }, {
+            {$push: {voted: data._id,votingResults:votingVAl}},{
             new: true
             })
             .then(function(poll, err){
