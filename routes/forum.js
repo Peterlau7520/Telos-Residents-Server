@@ -29,7 +29,6 @@ router.post('/getForum', (req,res) => {
     .populate('postedBy')
     .populate('commentedBy')
     .then(function(posts,err) {
-        console.log('errr',err)
         if(err){
             res.json({
                 success: false,
@@ -43,6 +42,31 @@ router.post('/getForum', (req,res) => {
         })
     })
 })
+
+router.post('/getCommentsByPostId', function(req,res){
+    const postId = req.body.postId;
+    Post.find({
+        estateName: req.body.estateName,
+        id: postId
+    })
+    .populate('Comment')
+    .populate('Resident')
+    .sort({commentedTime: -1})
+    .then(function(err, post){
+        if(err){
+            res.json({
+                success: false,
+                message: "Network errors"
+            })
+        }
+        res.json({
+            success:true,
+            post: post,
+            message: "Liked successfully"
+        })
+    })
+})
+
 
 router.post('/likeComment', (req,res) => {
     const commentId = req.body.commentId;
