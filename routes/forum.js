@@ -50,6 +50,8 @@ router.post('/getCommentsByPostId', function(req,res){
         _id: postId,
         estateName: req.body.estateName
     })
+    .populate('comments')
+    .populate('commentedBy')
     .then(function(post, err){
         console.log(post);
         if(err){
