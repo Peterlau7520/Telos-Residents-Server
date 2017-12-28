@@ -47,12 +47,9 @@ router.post('/getCommentsByPostId', function(req,res){
     const postId = req.body.postId;
     console.log(req.body);
     Post.find({
-        estateName: req.body.estateName,
-        id: postId
+        _id: postId,
+        estateName: req.body.estateName
     })
-    .populate('comments')
-    .populate('commentedBy')
-    .sort({commentedTime: -1})
     .then(function(post, err){
         console.log(post);
         if(err){
