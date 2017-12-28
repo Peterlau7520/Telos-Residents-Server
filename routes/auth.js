@@ -162,32 +162,32 @@ router.post('/login', (req, res) => {
    })
 })
 
-//WJT Authentication
-router.use(function(req, res, next) {
-  // check header or url parameters or post parameters for token
-  var token = req.headers['authorization'];
-  if (!token){
-    console.log("token failiure");
-    res.json({
-      success : false,
-      message : "Invalid token"
-    })
-  }
-  // token = token.replace('Bearer ', '');
-  jwt.verify(token, 'telosresidentserver', function(err, user) {
-    if (err) {
-      console.log(err)
-      res.json({
-        success: false,
-        message: 'Please Login'
-      });
-      next();
-    } else {
-      req.user = user; //set the user to req so other routes can use it
-      next();
-    }
-  });
-});
+// //WJT Authentication
+// router.use(function(req, res, next) {
+//   // check header or url parameters or post parameters for token
+//   var token = req.headers['authorization'];
+//   if (!token){
+//     console.log("token failiure");
+//     res.json({
+//       success : false,
+//       message : "Invalid token"
+//     })
+//   }
+//   // token = token.replace('Bearer ', '');
+//   jwt.verify(token, 'telosresidentserver', function(err, user) {
+//     if (err) {
+//       console.log(err)
+//       res.json({
+//         success: false,
+//         message: 'Please Login'
+//       });
+//       next();
+//     } else {
+//       req.user = user; //set the user to req so other routes can use it
+//       next();
+//     }
+//   });
+// });
 router.post('/changePassword', (req, res) => {
     console.log("reached here", req.body);
     Resident.findOne({'account' : req.body.account}, function(err, user){
