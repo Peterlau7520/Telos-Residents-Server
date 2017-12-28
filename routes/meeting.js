@@ -222,31 +222,41 @@ router.post('/vote', (req, res) => {
         else{
           console.log(data._id, 'idddddddddd')
           Poll.update({_id: req.body.pollID},
-
-            {/*$set: 
-              { votingResults: [{choice: req.body.option, resident: data._id}] ,
-              },*/
+            {
               $push: {
-                voted: data._id,
-                votingResults:{choice: req.body.option, resident: data._id}}
-            }
+                voted: data._id
+               }
+             }
             , {
             new: true
             })
             .then(function(poll, err){
-              Resident.update({account:  req.body.account},
-              {$push: 
-                { polls: req.body.pollID,
-                }
-              }, {
+              Poll.update({
+                _id: req.body.pollID
+
+              },
+              {
+                $addToSet:{votingResults: {choice: req.body.option, resident: data._id}}
+              } , {
               new: true
-              })
-              .then(function(pass, err){
-                console.log("pass", pass)
-                res.json({
-                  success : true,
-                  message: "choice has just been saved"
-                });
+              }).then(function(poll, err){
+                Resident.update({account:  req.body.account},
+                  {$push: 
+                    { polls: req.body.pollID,
+                    }
+                  }, {
+                  new: true
+                  })
+                  .then(function(pass, err){
+                    console.log("pass", pass)
+                    res.json({
+                      success : true,
+                      message: "choice has just been saved"
+                    });
+                  })
+
+
+
               })
           })
         }  
