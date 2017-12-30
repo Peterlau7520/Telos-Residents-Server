@@ -51,14 +51,6 @@ router.post('/allSurveys', (req, res) => {
               console.log(user)
               res.json({survey: list, success: true, completedSurveys: user.surveys})
             })
-        // var uniqueList = _.filter(survey, function(item, key, a){ 
-        //  Question
-        // .find({surveyId: item._id}).populate('optionIds')
-        //     .then(function(que, err){
-        //     item.question = que
-        // })  
-        //     return (todayDate != item.effectiveTo && todayDate > item.effectiveTo) ? item._id : ''
-        // });
         
     })
     }

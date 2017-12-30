@@ -29,54 +29,60 @@ router.post('/pastMeetings', (req, res) => {
         var pastMeetings = []
         if(meetings.length > 0) {
             promiseArr.push(new Promise(function(resolve, reject){
-               forEach(meetings, function(item, key, a){
-                  if( item.fileLinks && item.fileLinks.length > 0) {
-                      let fileLinks = [];
-                      var titleLink = ''
-                      var fileLinksLink = ''
-                        if(item.title){
-                        titleLink = item.title
-                        titleLink = titleLink.trim();
-                        }
-                        if(item.fileLinks[0]){
-                            fileLinksLink = item.fileLinks[0]
-                            fileLinksLink = fileLinksLink.trim();
-                        }
-                          let Key = `${estateName}/${titleLink}/${fileLinksLink}`;
-                          // let Key = `${req.user.estateName}/${titleLink}/${fileLinksLink}`;
-                          fileLinks.push({
-                            name: item.fileLinks[0],
-                            url: "https://"+BucketName+".s3.amazonaws.com/"+Key
-                          })
-                          item.fileLinks = fileLinks;
+                      forEach(meetings, function(item, key, a){
+                        if( item.fileLinks && item.fileLinks.length > 0) {
+                          let fileLinks = [];
+                          var titleLink = ''
+                          var fileLinksLink = ''
+                            if(item.title){
+                            titleLink = item.title;
+                            titleLink = titleLink.trim();
+                            titleLink = titleLink.replace(/ /g,'');
+                            pollMeeting_title = titleLink;
+                            }
+                            if(item.fileLinks[0]){
+                                fileLinksLink = item.fileLinks[0]
+                                fileLinksLink = fileLinksLink.trim();
+                                fileLinksLink = fileLinksLink.replace(/ /g,'');
+                            }
+                            let Key = `${estateName}/${titleLink}/${fileLinksLink}`;
+                            // let Key = `${req.user.estateName}/${titleLink}/${fileLinksLink}`;
+                            fileLinks.push({
+                              name: item.fileLinks[0],
+                              url: "https://"+BucketName+".s3.amazonaws.com/"+Key
+                            })
+                            item.fileLinks = fileLinks;
                     }   
                     if(item.polls){
-                        forEach(item.polls, function(poll, key, a){ 
-                            var pollEndTime = moment(new Date(poll.endTime));
-                            item.polls[key].endTime = pollEndTime.format("MM-DD-YYYY");
-                        let polefileLinks = []; 
-                        if(poll.fileLinks){ 
-                            forEach(poll.fileLinks, function(name, key, a){ 
-                                let fileLinks = [];
-                              var titleLink = ''
-                              var fileLinksLink = ''
-                              if(poll.title){
-                              titleLink = poll.title
-                              titleLink = titleLink.trim();
-                        }
-                        if(name){
-                            fileLinksLink = name
-                            fileLinksLink = fileLinksLink.trim();
-                        }
-                          let Key = `${estateName}/${titleLink}/${fileLinksLink}`;
-                          polefileLinks.push({
-                            name: name,
-                            url: "https://"+BucketName+".s3.amazonaws.com/"+Key
+                      forEach(item.polls, function(poll, key, a){ 
+                          var pollEndTime = moment(new Date(poll.endTime));
+                          item.polls[key].endTime = pollEndTime.format("MM-DD-YYYY");
+                      let polefileLinks = []; 
+                      if(poll.fileLinks){ 
+                          forEach(poll.fileLinks, function(name, key, a){ 
+                              let fileLinks = [];
+                            var titleLink = ''
+                            var fileLinksLink = ''
+                            if(poll.pollName){
+                            titleLink = poll.pollName;
+                            titleLink = titleLink.trim();
+                            titleLink = titleLink.replace(/ /g,'');
+                            }
+                            if(name){
+                                fileLinksLink = name
+                                fileLinksLink = fileLinksLink.trim();
+                                fileLinksLink = fileLinksLink.replace(/ /g,'');
+                            }
+                              let Key = `${estateName}/${pollMeeting_title}/${titleLink}/${fileLinksLink}`;
+                             
+                              polefileLinks.push({
+                                name: name,
+                                url: "https://"+BucketName+".s3.amazonaws.com/"+Key
+                              })
+                            poll.fileLinks = polefileLinks;
                           })
-                          poll.fileLinks = polefileLinks;
-                        })
-                       }
-                    })
+                      }
+                      })
                    }
                     var startTime = moment.utc(new Date(item.startTime));
                     item.startTime =  startTime.format("MM/DD/YYYY hh:mm a");
@@ -146,8 +152,8 @@ router.post('/currentMeetings', (req, res) => {
                           let fileLinks = [];
                         var titleLink = ''
                         var fileLinksLink = ''
-                        if(poll.title){
-                        titleLink = poll.title
+                        if(poll.pollName){
+                        titleLink = poll.pollName;
                         titleLink = titleLink.trim();
                         titleLink = titleLink.replace(/ /g,'');
                         }
