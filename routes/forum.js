@@ -20,7 +20,14 @@ const PostReport = models.PostReport;
 const CommentReport = models.CommentReport;
 
 
-
+//Sort function
+function compareDate(postA,postB){
+    if (postA.lastCommentedTime > postB.lastCommentedTime)
+        return -1;
+    if (postA.lastCommentedTime < postB.lastCommentedTime)
+        return 1;
+    return 0;
+  }
 router.post('/getForum', (req,res) => {
     Post.find({
         estateName: req.body.estateName
@@ -35,6 +42,7 @@ router.post('/getForum', (req,res) => {
                 message: "Network errors"
             })
         }
+        posts.sort(compareDate)
         res.json({
             success:true,
             posts: posts,
