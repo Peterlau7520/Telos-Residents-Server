@@ -22,9 +22,9 @@ const CommentReport = models.CommentReport;
 
 //Sort function
 function compareDate(postA,postB){
-    if (postA.lastCommentedTime > postB.lastCommentedTime)
+    if (postA.commentedTime > postB.commentedTime)
         return -1;
-    if (postA.lastCommentedTime < postB.lastCommentedTime)
+    if (postA.commentedTime < postB.commentedTime)
         return 1;
     return 0;
   }
@@ -61,7 +61,7 @@ router.post('/getCommentsByPostId', function(req,res){
     .populate('comments')
     .populate('commentedBy')
     .then(function(post, err){
-        // post.comments.sort(compareDate);
+        post.comments.sort(compareDate);
         if(err){
             res.json({
                 success: false,
