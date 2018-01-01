@@ -54,7 +54,7 @@ router.post('/allSurveys', (req, res) => {
     })
     }
     else{
-        res.json({message: "No Survey Found" , success: false})
+        res.json({message: "暫時没有問卷 | No Surveys Found" , success: false})
     }
   })
 })
