@@ -105,7 +105,7 @@ router.post('/submitSurveys', (req, res) => {
     }).lean()
     .then(function(userAnswer,err){
         if(userAnswer.length !== 0){
-          res.json({message: "You have filled in the survey before | 您已填寫過此問卷", success: false})
+          res.json({message: "您已填寫過此問卷 | You have filled in the survey before ", success: false})
         }else{
           promiseArr.push(new Promise(function(resolve, reject){
             _.forEach(questions, function(ques, index) {
@@ -134,7 +134,7 @@ router.post('/submitSurveys', (req, res) => {
              new: true
              })
              .then(function(survey, err){
-             res.json({message: "Survey Completed Successfully", success: true})
+             res.json({message: "成功填写问卷 | Survey Completed Successfully", success: true})
            })
          })
 
