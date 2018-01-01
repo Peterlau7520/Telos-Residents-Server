@@ -21,7 +21,14 @@ const CommentReport = models.CommentReport;
 
 
 //Sort function
-function compareDate(postA,postB){
+function sortPosts(postA,postB){
+    if (postA.lastCommentedTime > postB.lastCommentedTime)
+        return -1;
+    if (postA.lastCommentedTime < postB.lastCommentedTime)
+        return 1;
+    return 0;
+  }
+  function sortComments(postA,postB){
     if (postA.commentedTime > postB.commentedTime)
         return -1;
     if (postA.commentedTime < postB.commentedTime)
@@ -42,7 +49,7 @@ router.post('/getForum', (req,res) => {
                 message: "Network errors"
             })
         }
-        posts.sort(compareDate)
+        posts.sort(sortPosts)
         res.json({
             success:true,
             posts: posts,
@@ -61,7 +68,7 @@ router.post('/getCommentsByPostId', function(req,res){
     .populate('comments')
     .populate('commentedBy')
     .then(function(post, err){
-        post[0].comments.sort(compareDate);
+        post[0].comments.sort(sortComments);
         if(err){
             res.json({
                 success: false,
