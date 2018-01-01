@@ -61,7 +61,8 @@ router.post('/getCommentsByPostId', function(req,res){
     .populate('comments')
     .populate('commentedBy')
     .then(function(post, err){
-        post.comments.sort(compareDate);
+        const comments = post.comments;
+        console.log(comments)
         if(err){
             res.json({
                 success: false,
