@@ -15,7 +15,6 @@ const Resident = models.Resident;
 const UserAnswers = models.UserAnswers;
 
 router.post('/allSurveys', (req, res) => {
-  console.log(req.body)
   const promiseArr =[];
   Survey.find({estate: req.body.estateName}).lean()
   .then(function(survey, err) {
@@ -59,9 +58,44 @@ router.post('/allSurveys', (req, res) => {
     }
   })
 })
+router.post('/surveyResults', (req,res)=>{ 
+
+    const promiseArr =[];
+    Question.find({
+      surveyId: req.body.surveyId
+    }).lean()
+    .then(function(questions, err) {
+      if(err){
+        res.json({message: "Network Errors" , success: false})
+      }
+      if(questions){
+        console.log(questions);
+        _.forEach(questions, function(question, index){
+          promiseArr.push(new Promise(function(resolve, reject){
+          UserAnswers.find({
+            questionId: question._id
+          })
+          .populate('optionId')
+          .lean()
+          .then(function(userAnswers, err){
+            question.answers = userAnswers;
+            resolve(question)
+          })
+        }))
+        })
+        Promise.all(promiseArr)
+        .then(function(data, err){
+
+          res.json({data: data , success: true})
+          
+        });
+      }else{
+        res.json({message: "Please press again" , success: false})
+      }
+    })
+})
 
 router.post('/submitSurveys', (req, res) => {
-  console.log(req.body, "rrrrrrr")
   const promiseArr = []
   const questions = req.body.questions
     promiseArr.push(new Promise(function(resolve, reject){
