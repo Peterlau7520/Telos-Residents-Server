@@ -54,14 +54,14 @@ router.post('/getForum', (req,res) => {
 router.post('/getCommentsByPostId', function(req,res){
     const postId = req.body.postId;
     console.log(req.body);
-    Post.findOne({
+    Post.find({
         _id: postId,
         estateName: req.body.estateName
     })
     .populate('comments')
     .populate('commentedBy')
     .then(function(post, err){
-        post.comments.sort(compareDate);
+        post[0].comments.sort(compareDate);
         if(err){
             res.json({
                 success: false,
