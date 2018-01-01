@@ -98,37 +98,50 @@ router.post('/surveyResults', (req,res)=>{
 router.post('/submitSurveys', (req, res) => {
   const promiseArr = []
   const questions = req.body.questions
-    promiseArr.push(new Promise(function(resolve, reject){
-       _.forEach(questions, function(ques, index) {
-        console.log(ques)
-          const userAnswer = new UserAnswers({
-            questionId: ques.questionId,
-            surveyId: req.body.surveyId,
-            optionId: ques.optionId,
-            userId: req.body.userId
-          })
-          userAnswer.save()
-          .then(function(ans, err){
-            resolve(ans)
-          })
-      })
-    }))
-    Promise.all(promiseArr)
-    .then(function(data, err){
-      console.log(data)
-      if(err) res.send(err)
-       Resident.update({_id:  req.body.userId},
-        {$push: 
-          { surveys: data[0].surveyId
-          }
-        }, {
-        new: true
-        })
-        .then(function(survey, err){
-          console.log("yesssssss", survey)
-        res.json({message: "Survey Completed Successfully", success: true})
-      })
+
+    UserAnswers.find({
+      surveyId: req.body.surveyId,
+      userId: req.body.userId
+    }).lean()
+    .then(function(userAnswer,err){
+        if(userAnswer.length !== 0){
+          res.json({message: "You have filled in the survey before | 您已填寫過此問卷", success: false})
+        }else{
+          promiseArr.push(new Promise(function(resolve, reject){
+            _.forEach(questions, function(ques, index) {
+             console.log(ques)
+               const userAnswer = new UserAnswers({
+                 questionId: ques.questionId,
+                 surveyId: req.body.surveyId,
+                 optionId: ques.optionId,
+                 userId: req.body.userId
+               })
+               userAnswer.save()
+               .then(function(ans, err){
+                 resolve(ans)
+               })
+           })
+         }))
+         Promise.all(promiseArr)
+         .then(function(data, err){
+           console.log(data)
+           if(err) res.send(err)
+            Resident.update({_id:  req.body.userId},
+             {$push: 
+               { surveys: data[0].surveyId
+               }
+             }, {
+             new: true
+             })
+             .then(function(survey, err){
+             res.json({message: "Survey Completed Successfully", success: true})
+           })
+         })
+
+        }
+
     })
+   
 })
 
 
