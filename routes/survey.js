@@ -66,7 +66,7 @@ router.post('/surveyResults', (req,res)=>{
     }).lean()
     .then(function(questions, err) {
       if(err){
-        res.json({message: "Network Errors" , success: false})
+        res.json({message: "網絡連接問題 | Network Errors" , success: false})
       }
       if(questions){
         console.log(questions);

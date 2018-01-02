@@ -257,11 +257,9 @@ router.post('/vote', (req, res) => {
                     console.log("pass", pass)
                     res.json({
                       success : true,
-                      message: "choice has just been saved"
+                      message: "成功投票！| Choice has just been saved"
                     });
                   })
-
-
 
               })
           })
@@ -270,7 +268,7 @@ router.post('/vote', (req, res) => {
     }else{
       res.json({
           success : false,
-          message: "HKID Does Not Match"
+          message: "HKID 不符 | HKID Does Not Match"
         });
     }
        })
@@ -285,7 +283,7 @@ router.post('/views', (req, res) => {
       new: true
   })
    .then(function(resident, err){
-    res.json({message: "Successfully Viewed" , success: true})
+    res.json({message: "Successfully viewed" , success: true})
    })
 })
 

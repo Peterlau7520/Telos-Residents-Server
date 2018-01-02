@@ -46,7 +46,7 @@ router.post('/getForum', (req,res) => {
         if(err){
             res.json({
                 success: false,
-                message: "Network errors"
+                message: "網絡鏈接問題 | Network errors"
             })
         }
         posts.sort(sortPosts)
@@ -72,7 +72,7 @@ router.post('/getCommentsByPostId', function(req,res){
         if(err){
             res.json({
                 success: false,
-                message: "Network errors"
+                message: "網絡鏈接問題 | Network errors"
             })
         }
         res.json({
@@ -98,7 +98,7 @@ router.post('/likeComment', (req,res) => {
         if(err){
             res.json({
                 success: false,
-                message: "Network errors"
+                message: "網絡鏈接問題 | Network errors"
             })
         }
         res.json({
@@ -122,7 +122,7 @@ router.post('/likePost', (req,res) => {
         if(err){
             res.json({
                 success: false,
-                message: "Network errors"
+                message: "網絡鏈接問題 | Network errors"
             })
         }
         res.json({
@@ -151,7 +151,7 @@ router.post('/newPost', (req,res)=>{
             if(err){
                 res.json({
                     success: false,
-                    message: "Network errors"
+                    message: "網絡鏈接問題 | Network errors"
                 })
             }
             res.json({
@@ -195,7 +195,7 @@ router.post('/newComment', (req,res)=>{
                 if(err){
                     res.json({
                         success: false,
-                        message: "Network errors"
+                        message: "網絡鏈接問題 | Network errors"
                     })
                 }
                 res.json({
@@ -220,7 +220,7 @@ router.post('/reportPost', (req,res)=> {
                 if(err){
                     res.json({
                         success: false,
-                        message: "Network errors"
+                        message: "網絡鏈接問題 | Network errors"
                     })
                 }
                 res.json({

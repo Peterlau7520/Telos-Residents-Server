@@ -52,7 +52,7 @@ router.post('/noticeBoard', (req, res) => {
        uniqueList2.sort(compareDate);
       res.json({message: "Notices Found", success: true, notices: uniqueList2});
     }else{
-            res.json({message: "No Notices Found", success: false});
+            res.json({message: "暫時沒有通告 | No Notices Found", success: false});
     }
   })
 })
