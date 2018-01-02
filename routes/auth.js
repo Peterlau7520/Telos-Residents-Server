@@ -245,7 +245,7 @@ router.post('/saveHKID', (req, res) => {
     hkids.push(item.hkid)
       bucket.upload({
         Body: buf,
-        Key: `${req.body.estateName}/HKIDs/${item.hkid}/HKId.png`,
+        Key: `${req.body.estateName}/HKIDs/${req.body.account}/HKId.png`,
         ACL: 'public-read'
       }, function(err, data1) {
         if (err) {
