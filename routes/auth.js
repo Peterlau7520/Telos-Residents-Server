@@ -289,71 +289,11 @@ else {
 })
 
 
-router.post('/saveSignature', (req, res) => {
-  console.log(req.body, "rrrrr");
-  const promiseArr = [];
-  var avatarS3Url = [];
-  if (req.body.signatures && req.body.signatures !== '' && req.body.signatures !== null){
-        forEach(req.body.signatures, function(item, key, a){
-              promiseArr.push(new Promise(function(resolve, reject){
-                console.log(key, "key")
-            var originalBlob = item.image
-            var regex       = /^data:.+\/(.+);base64,(.*)$/;
-            var matches     = originalBlob.match(regex);
-            var base64Data  = matches && matches.length && matches[2] ? matches[2] : '';
-            var buf         = new Buffer(base64Data, 'base64');
-              bucket.upload({
-                Body: buf,
-                Key: `${item.estate}/OwnersSignature/${item.account}/signature${key}.png`,
-                ACL: 'public-read'
-              }, function(err, data1) {
-                if (err) {
-                  console.log(err)
-                }
-                if(data1) {
-                  avatarS3Url.push(data1.Location)
-                  console.log(avatarS3Url, "avatarS3Url")
-                  resolve(avatarS3Url)
-                }
-              })
-          }))
-       })
-      Promise.all(promiseArr)
-        .then(function(data, err){
-          console.log(data[0], "data")
-          update(req, res, data[0]);
-        })
-      }else {
-          update(req, res, '');
-      }
-      function update(req, res, fileLinks){
-        console.log(req.body.meeting_id, "meeting_id", fileLinks)
-        Resident.update({account: req.body.signatures[0].account},
-          {$set: 
-            { 
-              signature: fileLinks,
-            },
-            $addToSet:{
-              proxyAppointed: req.body.meeting_id
-            }
-          }, {
-          new: true
-          })
-          .then(function(pass, err){
-            console.log("pass", pass)
-            res.json({
-              success : true,
-                // token: 'JWT ' + generateToken(userInfo),
-              message: "成功委任天羅為投票代表 | Successfully appointed Telos as the proxy"
-            });
-        })
-      }
-})
-
-// Resident.findOne({account: req.body.signatures.account}) //account: req.body.account hkid: req.body.HKID
-//   .then(function(resident, err){
-//     if(resident !== null){
-//       if (req.body.signatures && req.body.signatures !== '' && req.body.signatures !== null){
+// router.post('/saveSignature', (req, res) => {
+//   console.log(req.body, "rrrrr");
+//   const promiseArr = [];
+//   var avatarS3Url = [];
+//   if (req.body.signatures && req.body.signatures !== '' && req.body.signatures !== null){
 //         forEach(req.body.signatures, function(item, key, a){
 //               promiseArr.push(new Promise(function(resolve, reject){
 //                 console.log(key, "key")
@@ -408,14 +348,76 @@ router.post('/saveSignature', (req, res) => {
 //             });
 //         })
 //       }
-//     }else{
-//       res.json({
-//         success : false,
-//         message: "HKID 不符 | HKID Does Not Match"
-//       });
-//     }
+// })
 
-//   })
+Resident.findOne({
+  account: req.body.signatures.account,
+  hkid: req.body.HKID}) //account: req.body.account hkid: req.body.HKID
+  .then(function(resident, err){
+    if(resident !== null){
+      if (req.body.signatures && req.body.signatures !== '' && req.body.signatures !== null){
+        forEach(req.body.signatures, function(item, key, a){
+              promiseArr.push(new Promise(function(resolve, reject){
+                console.log(key, "key")
+            var originalBlob = item.image
+            var regex       = /^data:.+\/(.+);base64,(.*)$/;
+            var matches     = originalBlob.match(regex);
+            var base64Data  = matches && matches.length && matches[2] ? matches[2] : '';
+            var buf         = new Buffer(base64Data, 'base64');
+              bucket.upload({
+                Body: buf,
+                Key: `${item.estate}/OwnersSignature/${item.account}/signature${key}.png`,
+                ACL: 'public-read'
+              }, function(err, data1) {
+                if (err) {
+                  console.log(err)
+                }
+                if(data1) {
+                  avatarS3Url.push(data1.Location)
+                  console.log(avatarS3Url, "avatarS3Url")
+                  resolve(avatarS3Url)
+                }
+              })
+          }))
+       })
+      Promise.all(promiseArr)
+        .then(function(data, err){
+          console.log(data[0], "data")
+          update(req, res, data[0]);
+        })
+      }else {
+          update(req, res, '');
+      }
+      function update(req, res, fileLinks){
+        console.log(req.body.meeting_id, "meeting_id", fileLinks)
+        Resident.update({account: req.body.signatures[0].account},
+          {$set: 
+            { 
+              signature: fileLinks,
+            },
+            $addToSet:{
+              proxyAppointed: req.body.meeting_id
+            }
+          }, {
+          new: true
+          })
+          .then(function(pass, err){
+            console.log("pass", pass)
+            res.json({
+              success : true,
+                // token: 'JWT ' + generateToken(userInfo),
+              message: "成功委任天羅為投票代表 | Successfully appointed Telos as the proxy"
+            });
+        })
+      }
+    }else{
+      res.json({
+        success : false,
+        message: "HKID 不符 | HKID Does Not Match"
+      });
+    }
+
+  })
 
 router.post('/saveChop', (req, res) => {
   console.log("r", req.body)
