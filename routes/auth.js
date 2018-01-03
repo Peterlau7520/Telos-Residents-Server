@@ -294,7 +294,7 @@ router.post('/saveSignature', (req, res) => {
   const promiseArr = [];
   var avatarS3Url = [];
   Resident.findOne({
-  account: req.body.signatures.account,
+  account: req.body.signatures[0].account,
   hkid: req.body.HKID}) //account: req.body.account hkid: req.body.HKID
   .then(function(resident, err){
     if(resident !== null){
