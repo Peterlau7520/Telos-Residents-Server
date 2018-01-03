@@ -212,7 +212,7 @@ router.post('/currentMeetings', (req, res) => {
 /*Voting for a particular Meeting's Poll*/
 router.post('/vote', (req, res) => {
   console.log(req.body, "body")
-   Resident.findOne({account: req.body.account,  hkid: req.body.HKID })
+   Resident.findOne({account: req.body.account })
    .then(function(data, err){
     console.log(data, "if data")
     if(data != null){
