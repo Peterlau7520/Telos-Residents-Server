@@ -22,16 +22,16 @@ const CommentReport = models.CommentReport;
 
 //Sort function
 function sortPosts(postA,postB){
-    if (dateFormat(postA.lastCommentedTime) > dateFormat(postB.lastCommentedTime))
+    if (new Date(postA.lastCommentedTime) > new Date(postB.lastCommentedTime))
         return -1;
-    if (dateFormat(postA.lastCommentedTime) < dateFormat(postB.lastCommentedTime))
+    if (new Date(postA.lastCommentedTime) < new Date(postB.lastCommentedTime))
         return 1;
     return 0;
   }
   function sortComments(postA,postB){
-    if (dateFormat(postA.commentedTime) > dateFormat(postB.commentedTime))
+    if (new Date(postA.commentedTime) > new Date(postB.commentedTime))
         return -1;
-    if (dateFormat(postA.commentedTime) < dateFormat(postB.commentedTime))
+    if (new Date(postA.commentedTime) < new Date(postB.commentedTime))
         return 1;
     return 0;
   }
