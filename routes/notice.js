@@ -39,7 +39,8 @@ router.post('/noticeBoard', (req, res) => {
     var uniqueList2 = _.filter(notices, function(item, key, a){   
         if(item.fileLinks.length > 0) {
               let fileLinks = [];
-                let Key = `${req.body.estateName}/Notices/${item.title.replace(/ /g,'')}/${item.fileLinks[0]}`;
+                var date = item.postDate.split(" ").join("");
+                let Key = `${req.body.estateName}/Notices/${item.title.replace(/ /g,'')}/${date}/${item.fileLinks[0]}`;
                 fileLinks.push({
                   name: item.fileLinks[0],
                   url: "https://"+BucketName+".s3.amazonaws.com/"+Key
