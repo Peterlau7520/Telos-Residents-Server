@@ -140,6 +140,7 @@ router.post('/login', (req, res) => {
           if(req.body.password !== user.password){
             res.json({success : false, message: "密碼不正確 | Wrong Password"});
           }else{
+              console.log(req.body);
               var userInfo = setUserInfo(user);
               Resident.update({account: req.body.account},
               {$set: 

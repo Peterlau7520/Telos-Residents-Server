@@ -45,10 +45,34 @@ router.post('/allSurveys', (req, res) => {
             var now = moment(new Date(sur.postDate));
             list[index].postDate =  now.format("D/MM/YYYY");
         })
+        const answerPromiseArr  = [];
             Resident.findOne({_id: req.body.userId})
             .then(function(user, err){
-              console.log(user)
-              res.json({survey: list, success: true, completedSurveys: user.surveys})
+              _.forEach(user.surveys, function(survey, index){
+                answerPromiseArr.push(new Promise(function(resolve, reject){
+                  UserAnswers.find({
+                    surveyId: survey,
+                    userId: req.body.userId
+                  })
+                  .populate('optionId')
+                  .populate('questionId')
+                  .lean()
+                  .then(function(userAnswers, err){
+                    console.log('userAnswers',userAnswers)
+                    const answer = {
+                      surveyId: survey,
+                      userAnswer:  userAnswers
+                    }
+                    resolve(answer)
+                  })
+                }))
+              })
+              Promise.all(answerPromiseArr)
+              .then(function(data, err){
+                res.json({survey: list, success: true, completedSurveys: data})
+                
+              });
+              // res.json({survey: list, success: true, completedSurveys: user.surveys})
             })
         
     })
