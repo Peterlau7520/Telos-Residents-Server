@@ -37,7 +37,7 @@ router.post('/allSurveys', (req, res) => {
             var currentDate = moment(new Date());
             currentDate = currentDate.format("D/MM/YYYY");
             var now1 = moment(new Date(sur.effectiveTo));
-            if(!(todayDate > sur.effectiveTo && todayDate != sur.effectiveTo)){
+            if(todayDate > now1 && todayDate != now1){
               list[index].status =  "Current"
          }else{
             list[index].status =  'expired'
