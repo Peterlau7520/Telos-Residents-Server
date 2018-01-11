@@ -35,8 +35,8 @@ router.post('/allSurveys', (req, res) => {
             list = data[0]
             _.forEach(data[0], function(sur, index) {
             var currentDate = new Date();
-            var now1 = new Date(sur.effectiveTo);
-            if(!(todayDate > now1 && todayDate != now1)){
+            var effectiveUntil = new Date(sur.effectiveTo);
+            if(!(todayDate > effectiveUntil && todayDate != effectiveUntil)){
               list[index].status =  "Current"
          }else{
             list[index].status =  'expired'
