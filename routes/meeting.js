@@ -45,7 +45,7 @@ router.post('/pastMeetings', (req, res) => {
                                 fileLinksLink = fileLinksLink.trim();
                                 fileLinksLink = fileLinksLink.replace(/ /g,'');
                             }
-                            let Key = `${estateName}/${titleLink}/${fileLinksLink}`;
+                            let Key = `${estateName}/${item.guid}/${fileLinksLink}`;
                             // let Key = `${req.user.estateName}/${titleLink}/${fileLinksLink}`;
                             fileLinks.push({
                               name: item.fileLinks[0],
@@ -73,8 +73,8 @@ router.post('/pastMeetings', (req, res) => {
                                 fileLinksLink = fileLinksLink.trim();
                                 fileLinksLink = fileLinksLink.replace(/ /g,'');
                             }
-                              let Key = `${estateName}/${pollMeeting_title}/${titleLink}/${fileLinksLink}`;
-                             
+                              //let Key = `${estateName}/${pollMeeting_title}/${titleLink}/${fileLinksLink}`;
+                              let Key = `${estateName}/${item.guid}/Poll/${fileLinksLink}`;
                               polefileLinks.push({
                                 name: name,
                                 url: "https://"+BucketName+".s3.amazonaws.com/"+Key
@@ -134,7 +134,7 @@ router.post('/currentMeetings', (req, res) => {
                             fileLinksLink = fileLinksLink.trim();
                             fileLinksLink = fileLinksLink.replace(/ /g,'');
                         }
-                        let Key = `${estateName}/${titleLink}/${fileLinksLink}`;
+                        let Key = `${estateName}/${item.guid}/${fileLinksLink}`;
                         // let Key = `${req.user.estateName}/${titleLink}/${fileLinksLink}`;
                         fileLinks.push({
                           name: item.fileLinks[0],
@@ -162,7 +162,7 @@ router.post('/currentMeetings', (req, res) => {
                             fileLinksLink = fileLinksLink.trim();
                             fileLinksLink = fileLinksLink.replace(/ /g,'');
                         }
-                          let Key = `${estateName}/${pollMeeting_title}/${titleLink}/${fileLinksLink}`;
+                          let Key = `${estateName}/${item.guid}/Poll/${fileLinksLink}`;
                          
                           polefileLinks.push({
                             name: name,

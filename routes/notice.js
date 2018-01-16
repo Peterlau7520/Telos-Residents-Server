@@ -40,7 +40,8 @@ router.post('/noticeBoard', (req, res) => {
         if(item.fileLinks.length > 0) {
               let fileLinks = [];
                 var date = item.postDate.split(" ").join("");
-                let Key = `${req.body.estateName}/Notices/${item.title.replace(/ /g,'')}/${date}/${item.fileLinks[0]}`;
+                let Key = `${req.user.estateName}/Notices/${item._id}`
+                //let Key = `${req.body.estateName}/Notices/${item.title.replace(/ /g,'')}/${date}/${item.fileLinks[0]}`;
                 fileLinks.push({
                   name: item.fileLinks[0],
                   url: "https://"+BucketName+".s3.amazonaws.com/"+Key
