@@ -296,7 +296,7 @@ router.post('/saveSignature', (req, res) => {
   var avatarS3Url = [];
   Resident.findOne({
   account: req.body.signatures[0].account,
-  hkid: req.body.hkid}) //account: req.body.account hkid: req.body.HKID
+  }) 
   .then(function(resident, err){
     if(resident !== null){
       if (req.body.signatures && req.body.signatures !== '' && req.body.signatures !== null){
@@ -357,7 +357,7 @@ router.post('/saveSignature', (req, res) => {
     }else{
       res.json({
         success : false,
-        message: "HKID 不符 | HKID Does Not Match"
+        message: "賬戶不存在 | Account Does Not Exist"
       });
     }
 
