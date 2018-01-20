@@ -53,7 +53,8 @@ function setUserInfo(request){
     nature: request.nature,
     registered: request.registered,
     numberOfOwners: request.numberOfOwners,
-    proxyAppointed: request.proxyAppointed
+    proxyAppointed: request.proxyAppointed,
+    deviceType : request.deviceType
   };
 }
 
@@ -144,7 +145,8 @@ router.post('/login', (req, res) => {
               var userInfo = setUserInfo(user);
               Resident.update({account: req.body.account},
               {$set: 
-                { deviceToken: req.body.deviceToken
+                { deviceToken: req.body.deviceToken,
+                  deviceType: req.body.deviceType,
                 }
               }, {
               new: true

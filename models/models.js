@@ -41,6 +41,7 @@ const residentSchema = new Schema({
             ref: 'Meeting'}
             ], //ALL THE MEETINGS WHERE THEY APPOINT US AS THE PROXY.
     deviceToken: String,
+    deviceType: String,
     posts: [
         {
             type: Schema.Types.ObjectId,
@@ -189,7 +190,8 @@ const meetingSchema = new Schema({
     estate:String,
     youtubelink: String,
     views: { type: String, default: 0 },
-    guid: String
+    guid: String,
+    NotificationStatus: { type: Boolean, default: false },
 })
 
 //FORUM
