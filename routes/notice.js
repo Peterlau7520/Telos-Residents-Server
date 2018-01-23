@@ -44,7 +44,7 @@ router.post('/noticeBoard', (req, res) => {
                 //let Key = `${req.body.estateName}/Notices/${item.title.replace(/ /g,'')}/${date}/${item.fileLinks[0]}`;
                 fileLinks.push({
                   name: item.fileLinks[0],
-                  url: "https://"+BucketName+".s3.amazonaws.com/"+Key
+                  url: "https://"+BucketName+".s3.amazonaws.com/"+Key + '.pdf'
                 })
               item.fileLinks = fileLinks;
             }
