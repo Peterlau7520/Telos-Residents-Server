@@ -48,7 +48,7 @@ router.post('/pastMeetings', (req, res) => {
                             let Key = `${estateName}/${item.guid}/${fileLinksLink}`;
                             // let Key = `${req.user.estateName}/${titleLink}/${fileLinksLink}`;
                             fileLinks.push({
-                              name: item.fileLinks[0],
+                              name: 'document.pdf',
                               url: "https://"+BucketName+".s3.amazonaws.com/"+Key
                             })
                             item.fileLinks = fileLinks;
