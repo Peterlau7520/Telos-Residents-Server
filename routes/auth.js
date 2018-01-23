@@ -125,7 +125,8 @@ router.post('/register', (req, res) => {
 
 router.post('/login', (req, res) => {
     console.log("reached here", req.body);
-    Resident.findOne({'account' : req.body.account}, function(err, user){
+    console.log('DEVICE TOKEN', JSON.parse(req.body.deviceToken));
+    Resident.findOne({'account' : req.body.account}, function(user, err){
       if(err){
         res.json({success : false, message: "網絡連接有誤 | Network Error"});
       }
