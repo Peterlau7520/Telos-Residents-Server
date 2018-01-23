@@ -125,12 +125,10 @@ router.post('/register', (req, res) => {
 
 router.post('/login', (req, res) => {
     console.log("reached here", req.body);
-    console.log('DEVICE TOKEN', JSON.parse(req.body.deviceToken));
     Resident.findOne({'account' : req.body.account}, function(err, user){
       if(err){
         res.json({success : false, message: "網絡連接有誤 | Network Error"});
       }
-      console.log(user, "user")
       if(!user){
           res.json({
           success : false,
@@ -146,7 +144,7 @@ router.post('/login', (req, res) => {
               var userInfo = setUserInfo(user);
               Resident.update({account: req.body.account},
               {$set: 
-                { deviceToken: req.body.deviceToken,
+                { deviceToken: JSON.parse(req.body.deviceToken),
                   deviceType: req.body.deviceType,
                 }
               }, {
