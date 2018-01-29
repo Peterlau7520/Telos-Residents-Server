@@ -142,7 +142,7 @@ router.post('/login', (req, res) => {
           }else{
               console.log(req.body);
               var userInfo = setUserInfo(user);
-              const deviceToken = null;
+              var deviceToken = null;
               if(req.body.deviceToken){
                 console.log('token', req.body.deviceToken)
                  deviceToken = JSON.parse(req.body.deviceToken.replace(/\\/g, ''))
