@@ -18,7 +18,7 @@ router.post('/getBadge', (req,res) => {
   const estateName = req.body.estateName;
   var getMeetings = new Promise(function(f, r) {
     Resident.aggregate([
-    { $match : { estateName : estateName } },
+    { $match : { estateName : estateName , account: req.body.account} },
     { "$group": {
       "_id": null,
       "count": { "$sum": 1 },
@@ -59,7 +59,7 @@ router.post('/getBadge', (req,res) => {
     .then(function(data, err){
      // console.log(data, "data")
       var surveys = data[0].survey
-      Survey.find({_id: {$nin: surveys}, estate: estateName})
+      Survey.find({_id: {$nin: surveys}})
       .then(function(sur, err){
         if(err) res.send(err);
         f(sur)

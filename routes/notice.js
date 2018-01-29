@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const models = require('../models/models');
 const Notice = models.Notice;
+const Resident = models.Resident;
 const _ = require('lodash');
 const forEach = require('async-foreach').forEach;
 const dateFormat = require('dateformat');
@@ -59,4 +60,19 @@ router.post('/noticeBoard', (req, res) => {
   })
 })
 
+router.get('/viewedNotice', (req, res) => {
+  const data = req.body //{noticeId: "5a586acc77a69431a09f7146", account: "hku1"}
+  Resident.update({account: data.account
+             }, {
+               $addToSet: { 
+                  viewedNotice: data.noticeId,
+               }
+             },{ 
+               new: true 
+             })
+  .then(function(Resident, err){
+    if(err) res.send(err);
+    console.log(Resident, "re")
+  })
+})
 module.exports = router;
