@@ -143,6 +143,7 @@ const surveySchema = new Schema({
     effectiveTo: Date,
     postDate: {type: Date, default: new Date()},
     targetAudience: [{block: String, floors: Array}],
+    NotificationStatus: {type: Boolean, default: false}
 })
 
 const questionSchema = new Schema({
