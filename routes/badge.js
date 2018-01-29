@@ -13,10 +13,12 @@ var Promise = require('bluebird');
 var moment = require("moment");
 
 
-router.get('/getBadge', (req,res) => {
+router.post('/getBadge', (req,res) => {
+  console.log(req.body, "helooooooo")
+  const estateName = req.body.estateName;
   var getMeetings = new Promise(function(f, r) {
-    const estateName = req.body.estateName;
     Resident.aggregate([
+    { $match : { estateName : estateName } },
     { "$group": {
       "_id": null,
       "count": { "$sum": 1 },
@@ -35,7 +37,7 @@ router.get('/getBadge', (req,res) => {
     .then(function(data, err){
       //console.log(data[0].tags, "data")
       var proxyAppointed = data[0].tags
-      Meeting.find({_id: {$nin: proxyAppointed}})
+      Meeting.find({_id: {$nin: proxyAppointed}, estate: estateName})
       .then(function(meetings, err){
         if(err) res.send(err);
         f(meetings)
@@ -57,7 +59,7 @@ router.get('/getBadge', (req,res) => {
     .then(function(data, err){
      // console.log(data, "data")
       var surveys = data[0].survey
-      Survey.find({_id: {$nin: surveys}})
+      Survey.find({_id: {$nin: surveys}, estate: estateName})
       .then(function(sur, err){
         if(err) res.send(err);
         f(sur)
