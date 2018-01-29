@@ -22,6 +22,7 @@ const authRoutes = require('./routes/auth');
 const noticeRoutes = require('./routes/notice');
 const surveyRoutes = require('./routes/survey');
 const meetingRoutes = require('./routes/meeting')
+const badgeRoutes = require('./routes/badge')
 const forumRoutes = require('./routes/forum');
 
 // ----------------- AWS -----------------
@@ -46,6 +47,7 @@ app.use('/', noticeRoutes);
 app.use('/', surveyRoutes);
 app.use('/', meetingRoutes);
 app.use('/', forumRoutes);
+app.use('/', badgeRoutes);
 
 app.listen(process.env.PORT || 3000, function(){
   console.log("app successfully listening on port 3000");
