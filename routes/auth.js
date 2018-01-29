@@ -144,6 +144,7 @@ router.post('/login', (req, res) => {
               var userInfo = setUserInfo(user);
               const deviceToken = null;
               if(req.body.deviceToken){
+                console.log('token', req.body.deviceToken)
                 const deviceToken = JSON.parse(req.body.deviceToken.replace(/\\/g, ''))
               }
               Resident.update({account: req.body.account},
