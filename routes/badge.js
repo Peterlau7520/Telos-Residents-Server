@@ -13,7 +13,7 @@ var Promise = require('bluebird');
 var moment = require("moment");
 
 
-router.get('/getBadge', (req,res) => {
+router.post('/getBadge', (req,res) => {
   console.log(req.body, "helooooooo")
   const estateName = "HKU"//req.body.estateName;
   var getMeetings = new Promise(function(f, r) {
