@@ -59,7 +59,7 @@ router.post('/getBadge', (req,res) => {
     .then(function(data, err){
      // console.log(data, "data")
       var surveys = data[0].survey
-      Survey.find({_id: {$nin: surveys}})
+      Survey.find({_id: {$nin: surveys}, estate: estateName})
       .then(function(sur, err){
         if(err) res.send(err);
         f(sur)
