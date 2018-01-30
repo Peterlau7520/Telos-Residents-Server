@@ -54,7 +54,8 @@ function setUserInfo(request){
     registered: request.registered,
     numberOfOwners: request.numberOfOwners,
     proxyAppointed: request.proxyAppointed,
-    deviceType : request.deviceType
+    deviceType : request.deviceType,
+    viewedNotice: request.viewedNotice
   };
 }
 

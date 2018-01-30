@@ -26,11 +26,12 @@ AWS.config.update({
 
 const bucket = new AWS.S3({params: {Bucket: BucketName}});
 router.post('/noticeBoard', (req, res) => {
-  console.log(req.body);
+  console.log(req.body, "rrrrrrrrrr");
    Notice
-  .find({estate: req.body.estateName})
+  .find({estate: "HKU"/*req.body.estateName*/})
   .lean()
   .then(function(notices, err) {
+    var allNotices = _.map(notices, '_id');
     if(notices.length){
     var todayDate = new Date()
     var uniqueList = _.filter(notices, function(item, key, a){   
@@ -53,16 +54,24 @@ router.post('/noticeBoard', (req, res) => {
        });
        uniqueList.sort(compareDate);
        uniqueList2.sort(compareDate);
-      res.json({message: "Notices Found", success: true, notices: uniqueList2});
+       console.log(allNotices, "allNotices")
+       Resident.findOne({estateName: "HKU"/*req.body.estateName*/, account: "hku1" /*req.body.account*/})
+       .then(function(Resident, err){
+        if(err) res.send(err)
+          console.log(Resident, "Residentss")
+        var unread = _.differenceWith(allNotices ,Resident.viewedNotice, _.isEqual);
+        console.log(unread, "unread")
+      res.json({message: "Notices Found", success: true, notices: uniqueList2,viewedNotice:Resident.viewedNotice, unreadNotices:unread  });
+      })
     }else{
             res.json({message: "暫時沒有通告 | No Notices Found", success: false});
     }
   })
 })
 
-router.get('/viewedNotice', (req, res) => {
+router.post('/viewedNotice', (req, res) => {
   const data = req.body //{noticeId: "5a586acc77a69431a09f7146", account: "hku1"}
-  Resident.update({account: data.account
+  Resident.findOneAndUpdate({account: data.account
              }, {
                $addToSet: { 
                   viewedNotice: data.noticeId,
@@ -72,6 +81,7 @@ router.get('/viewedNotice', (req, res) => {
              })
   .then(function(Resident, err){
     if(err) res.send(err);
+    res.json({message: "updated successfully", viewedNotices: Resident.viewedNotice})
     console.log(Resident, "re")
   })
 })
