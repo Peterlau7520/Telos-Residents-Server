@@ -28,7 +28,7 @@ const bucket = new AWS.S3({params: {Bucket: BucketName}});
 router.post('/noticeBoard', (req, res) => {
   //console.log(req.body, "rrrrrrrrrr");
    Notice
-  .find({estate: "HKU"/*req.body.estateName*/})
+  .find({estate: req.body.estateName})
   .lean()
   .then(function(notices, err) {
     var allNotices = _.map(notices, '_id');
