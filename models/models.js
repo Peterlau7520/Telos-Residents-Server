@@ -196,6 +196,7 @@ const meetingSchema = new Schema({
     views: { type: String, default: 0 },
     guid: String,
     NotificationStatus: { type: Boolean, default: false },
+    proxyFullName: String,
 })
 
 //FORUM
