@@ -86,7 +86,7 @@ router.post('/pastMeetings', (req, res) => {
                    }
                     var startTime = moment.utc(new Date(item.startTime));
                     item.startTime =  startTime.format("MM/DD/YYYY hh:mm a");
-                    console.log(item)
+                    //console.log(item)
                     if(Date.parse(new Date(item.endTime)) < Date.parse(new Date)){
                       var endTime = moment.utc(new Date(item.endTime));
                     item.endTime =  endTime.format("MM/DD/YYYY hh:mm a");
@@ -115,7 +115,7 @@ router.post('/currentMeetings', (req, res) => {
         var currentMeetings = []
         var pollMeeting_title = '';
         //check whether telos is appointed
-        console.log(meetings);
+       // console.log(meetings);
         if(meetings.length > 0) {
             promiseArr.push(new Promise(function(resolve, reject){
                forEach(meetings, function(item, key, a){
@@ -176,7 +176,7 @@ router.post('/currentMeetings', (req, res) => {
                      var startTime = moment.utc(new Date(item.startTime));
                      item.startTime =  startTime.format("MM/DD/YYYY hh:mm a");
                       if(item.views > 0 ){
-                        console.log("hhhh")
+                       // console.log("hhhh")
                         Resident.update({account: req.body.account},
                           {$addToSet: {
                             proxyAppointed: item._id
@@ -184,7 +184,7 @@ router.post('/currentMeetings', (req, res) => {
                           }
                           )
                         .then(function(Resident, err){
-                          console.log(Resident)
+                          //console.log(Resident)
                         })
                       }
                       if(Date.parse(new Date(item.endTime)) > Date.parse(new Date)){
@@ -204,21 +204,21 @@ router.post('/currentMeetings', (req, res) => {
             })
         }
        else{
-             console.log('No meetings found'); 
+             //console.log('No meetings found'); 
             res.json({message: "No Meetings Found", success: false})
         }
     })
 })
 /*Voting for a particular Meeting's Poll*/
 router.post('/vote', (req, res) => {
-  console.log(req.body, "body")
+ // console.log(req.body, "body")
    Resident.findOne({account: req.body.account })
    .then(function(data, err){
-    console.log(data, "if data")
+    //console.log(data, "if data")
     if(data != null){
       Poll.find({ _id: req.body.pollID, voted: data._id  })
       .then(function(voted, err){
-        console.log("voted", voted)
+        //console.log("voted", voted)
         if(voted.length != 0){
             res.json({
             success : false,
@@ -226,7 +226,7 @@ router.post('/vote', (req, res) => {
           });
         }
         else{
-          console.log(data._id, 'idddddddddd')
+          //console.log(data._id, 'idddddddddd')
           Poll.update({_id: req.body.pollID},
             {
               $push: {
@@ -254,7 +254,7 @@ router.post('/vote', (req, res) => {
                   new: true
                   })
                   .then(function(pass, err){
-                    console.log("pass", pass)
+                    //console.log("pass", pass)
                     res.json({
                       success : true,
                       message: "成功投票！| Choice has just been saved"

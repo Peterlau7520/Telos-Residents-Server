@@ -57,7 +57,7 @@ router.post('/allSurveys', (req, res) => {
                   .populate('questionId')
                   .lean()
                   .then(function(userAnswers, err){
-                    console.log('userAnswers',userAnswers)
+                    //console.log('userAnswers',userAnswers)
                     const answer = {
                       surveyId: survey,
                       userAnswer:  userAnswers
@@ -92,7 +92,7 @@ router.post('/surveyResults', (req,res)=>{
         res.json({message: "網絡連接問題 | Network Errors" , success: false})
       }
       if(questions){
-        console.log(questions);
+        //console.log(questions);
         _.forEach(questions, function(question, index){
           promiseArr.push(new Promise(function(resolve, reject){
           UserAnswers.find({
@@ -121,7 +121,7 @@ router.post('/surveyResults', (req,res)=>{
 router.post('/submitSurveys', (req, res) => {
   const promiseArr = []
   const questions = req.body.questions
-
+  console.log("rrrrrrrrrrrjhgfjdfhgjdfgjhrrr", req.body)
     UserAnswers.find({
       surveyId: req.body.surveyId,
       userId: req.body.userId
@@ -132,12 +132,13 @@ router.post('/submitSurveys', (req, res) => {
         }else{
           promiseArr.push(new Promise(function(resolve, reject){
             _.forEach(questions, function(ques, index) {
-             console.log(ques)
+             //console.log(ques)
                const userAnswer = new UserAnswers({
                  questionId: ques.questionId,
                  surveyId: req.body.surveyId,
                  optionId: ques.optionId,
-                 userId: req.body.userId
+                 userId: req.body.userId,
+                 estateName: req.body.estateName
                })
                userAnswer.save()
                .then(function(ans, err){
@@ -147,7 +148,7 @@ router.post('/submitSurveys', (req, res) => {
          }))
          Promise.all(promiseArr)
          .then(function(data, err){
-           console.log(data)
+           //console.log(data)
            if(err) res.send(err)
             Resident.update({_id:  req.body.userId},
              {$push: 

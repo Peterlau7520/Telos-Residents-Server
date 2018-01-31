@@ -26,7 +26,7 @@ AWS.config.update({
 
 const bucket = new AWS.S3({params: {Bucket: BucketName}});
 router.post('/noticeBoard', (req, res) => {
-  console.log(req.body, "rrrrrrrrrr");
+  //console.log(req.body, "rrrrrrrrrr");
    Notice
   .find({estate: "HKU"/*req.body.estateName*/})
   .lean()
@@ -54,13 +54,13 @@ router.post('/noticeBoard', (req, res) => {
        });
        uniqueList.sort(compareDate);
        uniqueList2.sort(compareDate);
-       console.log(allNotices, "allNotices")
+       //console.log(allNotices, "allNotices")
        Resident.findOne({estateName: "HKU"/*req.body.estateName*/, account: "hku1" /*req.body.account*/})
        .then(function(Resident, err){
         if(err) res.send(err)
-          console.log(Resident, "Residentss")
+          //console.log(Resident, "Residentss")
         var unread = _.differenceWith(allNotices ,Resident.viewedNotice, _.isEqual);
-        console.log(unread, "unread")
+        //console.log(unread, "unread")
       res.json({message: "Notices Found", success: true, notices: uniqueList2,viewedNotice:Resident.viewedNotice, unreadNotices:unread  });
       })
     }else{
@@ -82,7 +82,7 @@ router.post('/viewedNotice', (req, res) => {
   .then(function(Resident, err){
     if(err) res.send(err);
     res.json({message: "updated successfully", viewedNotices: Resident.viewedNotice})
-    console.log(Resident, "re")
+    //console.log(Resident, "re")
   })
 })
 module.exports = router;

@@ -13,12 +13,13 @@ var Promise = require('bluebird');
 var moment = require("moment");
 
 
-router.post('/getBadge', (req,res) => {
+router.get('/getBadge', (req,res) => {
   console.log(req.body, "helooooooo")
-  const estateName = req.body.estateName;
+  const estateName = "HKU"//req.body.estateName;
+  const account = "hku1" //req.body.account
   var getMeetings = new Promise(function(f, r) {
     Resident.aggregate([
-    { $match : { estateName : estateName , account: req.body.account} },
+    { $match : { estateName : estateName , account: account} },
     { "$group": {
       "_id": null,
       "count": { "$sum": 1 },
@@ -35,17 +36,17 @@ router.post('/getBadge', (req,res) => {
     }}
     ])
     .then(function(data, err){
-     console.log(data[0], "data")
+     //console.log(data[0], "data")
       var proxyAppointed = data[0].tags
       Meeting.find({_id: {$nin: proxyAppointed}, estate: estateName})
       .then(function(meetings, err){
-        console.log(meetings, "meetings")
+        //console.log(meetings, "meetings")
         if(err) res.send(err);
         var todayDate = new Date()
         var uniqueList1 = _.filter(meetings, function(item, key, a){   
           return (!(todayDate != new Date(item.endTime) && todayDate > new Date(item.endTime))) ? item._id : ''
        });
-        console.log(uniqueList1, "uniqueList")
+        //console.log(uniqueList1, "uniqueList")
         f(uniqueList1)
         //console.log(meetings," meetings")
       })
@@ -56,6 +57,7 @@ router.post('/getBadge', (req,res) => {
 
   var getSurveys = new Promise(function(f, r) {
     UserAnswers.aggregate([
+    {$match: { estateName : estateName}},
     { "$group": {
       "_id": null,
       "count": { "$sum": 1 },
@@ -63,18 +65,25 @@ router.post('/getBadge', (req,res) => {
     }}
     ])
     .then(function(data, err){
-     //console.log(data, "data")
-      var surveys = data[0].survey
-      Survey.find({_id: {$nin: surveys}, estate: estateName})
+    console.log(data, "data")
+    var surveys = []
+    if(data.length != 0){
+       surveys = data[0].survey
+    }
+      Resident.findOne({estateName: estateName, account: account}).populate('surveys')
       .then(function(sur, err){
-        console.log(sur, "sur")
+        console.log(sur, "surrrr")
         var todayDate = new Date()
-        var uniqueList = _.filter(sur, function(item, key, a){   
+        var uniqueList = _.filter(sur.surveys, function(item, key, a){   
           return (!(todayDate != new Date(item.effectiveTo) && todayDate > new Date(item.effectiveTo))) ? item._id : ''
        });
-        //console.log(uniqueList, "uniqueList")
+        console.log(uniqueList, "uniqueList")
+         var list = _.map(uniqueList, '_id');
+         console.log(list, "list")
+        var unanswered = _.differenceWith(list,surveys, _.isEqual);
+        console.log(unanswered, "unanswered")
         if(err) res.send(err);
-        f(uniqueList)
+        f(unanswered)
         //console.log(sur," sur")
       })
     })
