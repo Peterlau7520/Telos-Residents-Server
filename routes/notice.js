@@ -55,7 +55,7 @@ router.post('/noticeBoard', (req, res) => {
        uniqueList.sort(compareDate);
        uniqueList2.sort(compareDate);
        //console.log(allNotices, "allNotices")
-       Resident.findOne({estateName: "HKU"/*req.body.estateName*/, account: "hku1" /*req.body.account*/})
+       Resident.findOne({estateName: req.body.estateName, account: req.body.account})
        .then(function(Resident, err){
         if(err) res.send(err)
           //console.log(Resident, "Residentss")

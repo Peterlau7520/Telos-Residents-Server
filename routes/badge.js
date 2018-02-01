@@ -73,16 +73,16 @@ router.post('/getBadge', (req,res) => {
     if(data.length != 0){
        surveys = data[0].survey
     }
-      // Resident.findOne({estateName: estateName, account: account}).populate('surveys')
-      // .then(function(sur, err){
-        console.log(Resident, "surrrr")
+      Survey.find({estate: estateName})
+      .then(function(sur, err){
+        console.log(sur, "surrrr")
         var todayDate = new Date()
-        var uniqueList = _.filter(Resident.surveys, function(item, key, a){   
+        var uniqueList = _.filter(sur, function(item, key, a){   
           return (!(todayDate != new Date(item.effectiveTo) && todayDate > new Date(item.effectiveTo))) ? item._id : ''
        });
         //console.log(uniqueList, "uniqueList")
          var list = _.map(uniqueList, '_id');
-         //console.log(list, "list")
+         console.log(list, "list", surveys)
         var unanswered = _.differenceWith(list,surveys, _.isEqual);
         console.log(unanswered, "unanswered")
         if(err) res.send(err);
@@ -92,7 +92,7 @@ router.post('/getBadge', (req,res) => {
     })
   })
     })
-
+})
     Promise.all([getMeetings, getSurveys])
   .then(function(data) {
     //console.log(data)

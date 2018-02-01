@@ -16,7 +16,6 @@ const UserAnswers = models.UserAnswers;
 
 router.post('/allSurveys', (req, res) => {
   const promiseArr =[];
-   var completedSurveys = []
   Survey.find({estate: req.body.estateName}).lean()
   .then(function(survey, err) {
     if(survey.length){
@@ -46,7 +45,6 @@ router.post('/allSurveys', (req, res) => {
             list[index].postDate =  now.format("D/MM/YYYY");
         })
         const answerPromiseArr  = [];
-       
             Resident.findOne({_id: req.body.userId})
             .then(function(user, err){
               _.forEach(user.surveys, function(survey, index){
@@ -60,25 +58,22 @@ router.post('/allSurveys', (req, res) => {
                   .lean()
                   .then(function(userAnswers, err){
                     console.log('userAnswers',userAnswers)
-                    
-                      var effectiveUntil = new Date(survey.effectiveTo);
-                    if(todayDate > effectiveUntil && todayDate != effectiveUntil){
-                      var answer = {}
-                     answer = {
+                    if(userAnswers.length != 0){
+                    const answer = {
                       surveyId: survey,
                       userAnswer:  userAnswers
                     }
                     resolve(answer)
-                  } 
-                    else{resolve()}
+                    }
+                    else{
+                       resolve()
+                    }
                   })
                 }))
               })
               Promise.all(answerPromiseArr)
               .then(function(data, err){
-                console.log(data, "data")
-                var final = _.pull(data, undefined)
-                console.log(final, "final")
+                const final= _.remove(data, undefined)
                 res.json({survey: list, success: true, completedSurveys: final})
                 
               });
@@ -160,6 +155,7 @@ router.post('/submitSurveys', (req, res) => {
          Promise.all(promiseArr)
          .then(function(data, err){
            //console.log(data)
+
            if(err) res.send(err)
             Resident.update({_id:  req.body.userId},
              {$push: 
