@@ -13,13 +13,13 @@ var Promise = require('bluebird');
 var moment = require("moment");
 
 
-router.post('/getBadge', (req,res) => {
+router.get('/getBadge', (req,res) => {
   console.log(req.body, "helooooooo")
-  const estateName = req.body.estateName;
-  const account = req.body.account
+  const estateName = "HKU"/*req.body.estateName;*/
+  const account = "hku1"/*req.body.account*/
   var getMeetings = new Promise(function(f, r) {
     Resident.aggregate([
-    { $match : { estateName : estateName , account: account} },
+    { $match : { estateName : estateName , account: account}},
     { "$group": {
       "_id": null,
       "count": { "$sum": 1 },
@@ -56,8 +56,11 @@ router.post('/getBadge', (req,res) => {
 })
 
   var getSurveys = new Promise(function(f, r) {
+    Resident.findOne({estateName: estateName, account: account}).populate('surveys')
+    .then(function(Resident, err){
+      if(err) res.send(err)
     UserAnswers.aggregate([
-    {$match: { estateName : estateName}},
+    {$match: { estateName : estateName, userId: Resident._id}},
     { "$group": {
       "_id": null,
       "count": { "$sum": 1 },
@@ -70,23 +73,24 @@ router.post('/getBadge', (req,res) => {
     if(data.length != 0){
        surveys = data[0].survey
     }
-      Resident.findOne({estateName: estateName, account: account}).populate('surveys')
-      .then(function(sur, err){
-        console.log(sur, "surrrr")
+      // Resident.findOne({estateName: estateName, account: account}).populate('surveys')
+      // .then(function(sur, err){
+        console.log(Resident, "surrrr")
         var todayDate = new Date()
-        var uniqueList = _.filter(sur.surveys, function(item, key, a){   
+        var uniqueList = _.filter(Resident.surveys, function(item, key, a){   
           return (!(todayDate != new Date(item.effectiveTo) && todayDate > new Date(item.effectiveTo))) ? item._id : ''
        });
-        console.log(uniqueList, "uniqueList")
+        //console.log(uniqueList, "uniqueList")
          var list = _.map(uniqueList, '_id');
-         console.log(list, "list")
+         //console.log(list, "list")
         var unanswered = _.differenceWith(list,surveys, _.isEqual);
         console.log(unanswered, "unanswered")
         if(err) res.send(err);
         f(unanswered)
         //console.log(sur," sur")
-      })
+      //})
     })
+  })
     })
 
     Promise.all([getMeetings, getSurveys])
