@@ -16,6 +16,7 @@ const UserAnswers = models.UserAnswers;
 
 router.post('/allSurveys', (req, res) => {
   const promiseArr =[];
+   var completedSurveys = []
   Survey.find({estate: req.body.estateName}).lean()
   .then(function(survey, err) {
     if(survey.length){
@@ -45,6 +46,7 @@ router.post('/allSurveys', (req, res) => {
             list[index].postDate =  now.format("D/MM/YYYY");
         })
         const answerPromiseArr  = [];
+       
             Resident.findOne({_id: req.body.userId})
             .then(function(user, err){
               _.forEach(user.surveys, function(survey, index){
@@ -57,18 +59,27 @@ router.post('/allSurveys', (req, res) => {
                   .populate('questionId')
                   .lean()
                   .then(function(userAnswers, err){
-                    //console.log('userAnswers',userAnswers)
-                    const answer = {
+                    console.log('userAnswers',userAnswers)
+                    
+                      var effectiveUntil = new Date(survey.effectiveTo);
+                    if(todayDate > effectiveUntil && todayDate != effectiveUntil){
+                      var answer = {}
+                     answer = {
                       surveyId: survey,
                       userAnswer:  userAnswers
                     }
                     resolve(answer)
+                  } 
+                    else{resolve()}
                   })
                 }))
               })
               Promise.all(answerPromiseArr)
               .then(function(data, err){
-                res.json({survey: list, success: true, completedSurveys: data})
+                console.log(data, "data")
+                var final = _.pull(data, undefined)
+                console.log(final, "final")
+                res.json({survey: list, success: true, completedSurveys: final})
                 
               });
               // res.json({survey: list, success: true, completedSurveys: user.surveys})

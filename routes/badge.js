@@ -13,10 +13,10 @@ var Promise = require('bluebird');
 var moment = require("moment");
 
 
-router.get('/getBadge', (req,res) => {
+router.post('/getBadge', (req,res) => {
   console.log(req.body, "helooooooo")
-  const estateName = "HKU"/*req.body.estateName;*/
-  const account = "hku1"/*req.body.account*/
+  const estateName = req.body.estateName;
+  const account = req.body.account
   var getMeetings = new Promise(function(f, r) {
     Resident.aggregate([
     { $match : { estateName : estateName , account: account}},
