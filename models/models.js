@@ -161,7 +161,8 @@ const optionSchema = new Schema({
     optionNameEn: String,
     optionNameChn: String,
     optionsEn: [],
-    optionsChn: []
+    optionsChn: [],
+    totalUsersAnswered: String
 })
 
 const userAnswersSchema = new Schema({
@@ -194,6 +195,7 @@ const meetingSchema = new Schema({
     estate:String,
     youtubelink: String,
     views: { type: String, default: 0 },
+    pollReport: Array,
     guid: String,
     NotificationStatus: { type: Boolean, default: false },
     proxyFullName: String,
@@ -205,7 +207,7 @@ const postSchema = new Schema({
     account: String,
     estateName: String,
     content: String,
-    postTime: String,
+     postTime: { type: Date, default: new Date() },
     lastCommentedTime: String,
     comments: [
         {
