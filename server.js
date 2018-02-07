@@ -49,6 +49,6 @@ app.use('/', meetingRoutes);
 app.use('/', forumRoutes);
 app.use('/', badgeRoutes);
 
-app.listen(process.env.PORT || 3000, function(){
+app.listen(process.env.PORT || 4000, function(){
   console.log("app successfully listening on port 3000");
 })

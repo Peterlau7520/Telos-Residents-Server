@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 var crypto = require('crypto');
+var tokenSecret = 'piQqgR98eAJJtF[92mRoAnV]U3}sUhtPd$z&vW]>h7%Us3R24ZL)Kb3)'
 const models = require('../models/models');
 const Estate = models.Estate;
 const Resident = models.Resident;
@@ -170,6 +171,52 @@ router.post('/login', (req, res) => {
    })
 })
 
+router.post('/userlogin', (req, res) => {
+  console.log(req.body, "he")
+  var account = req.body.account;
+  var password = req.body.password;
+  Resident.findOne({account: account})
+  .then(function(user) {
+    console.log(user, "user")
+    if (user) {
+      
+      if(user.deleted || user.isBlock) {
+        res.status(403).send({
+          success: false,
+          message: "Your profile is not active. Please contact to system administrator."
+        });
+      }
+      if(user.password == password) {
+        user = user.toJSON();
+        //delete user.hashedPassword;
+        //delete user.salt;
+        //user.myMusic = [];
+        // if user is found and password is right
+        // create a token
+        var token = jwt.sign(user, tokenSecret, {
+          expiresIn: 86400 // expires in 24 hours
+        });
+        console.log("helo", token)
+        res.json({
+          success: true,
+          message: "Login successfull.",
+          user: user,
+          token: token
+        });
+      } else {
+        res.status(403).send({
+          success: false,
+          message: "Invalid Email or Password."
+        });
+      }
+    } else {
+      res.status(403).send({
+        success: false,
+        message: "Invalid Email or Password."
+      });
+    }
+  });
+})
 // //WJT Authentication
 // router.use(function(req, res, next) {
 //   // check header or url parameters or post parameters for token

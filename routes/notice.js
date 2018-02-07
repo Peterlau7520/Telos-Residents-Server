@@ -26,7 +26,7 @@ AWS.config.update({
 
 const bucket = new AWS.S3({params: {Bucket: BucketName}});
 router.post('/noticeBoard', (req, res) => {
-  //console.log(req.body, "rrrrrrrrrr");
+  console.log(req.body, "rrrrrrrrrr");
    Notice
   .find({estate: req.body.estateName})
   .lean()
