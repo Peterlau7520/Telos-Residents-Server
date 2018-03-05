@@ -14,8 +14,8 @@ const Resident = models.Resident;
 
 var AWS = require('aws-sdk');
 AWS.config.update({
-  accessKeyId: 'AKIAIMLMZLII2XCKU6UA',
-  secretAccessKey: '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',
+  accessKeyId: 'AKIAIRBP4HZIW3P7C7VQ',
+  secretAccessKey: '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',
   region: 'ap-southeast-1'
 });
 
