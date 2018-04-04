@@ -51,6 +51,8 @@ function setUserInfo(request){
     account: request.account,
     estateName: request.estateName,
     unit: request.unit,
+    block: request.block,
+    floor: request.floor,
     nature: request.nature,
     registered: request.registered,
     numberOfOwners: request.numberOfOwners,
