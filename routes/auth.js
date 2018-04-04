@@ -12,8 +12,8 @@ const bcrypt   = require('bcrypt-nodejs');
 const BucketName = 'telospdf';
 var AWS = require('aws-sdk');
 AWS.config.update({
-  accessKeyId: 'AKIAIMLMZLII2XCKU6UA',
-  secretAccessKey: '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',
+  accessKeyId: process.env.AWS_accessKeyId ,
+  secretAccessKey: process.env.AWS_secretAccessKey ,
   region: 'ap-southeast-1'
 });
 const bucket = new AWS.S3({params: {Bucket: BucketName}});

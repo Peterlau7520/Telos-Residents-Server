@@ -19,8 +19,8 @@ function compareDate(noticeA,noticeB){
 
 
 AWS.config.update({
-  accessKeyId: 'AKIAIMLMZLII2XCKU6UA',
-  secretAccessKey: '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',
+  accessKeyId: process.env.AWS_accessKeyId ,
+  secretAccessKey: process.env.AWS_secretAccessKey ,
   region: 'ap-southeast-1'
 });
 
