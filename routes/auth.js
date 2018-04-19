@@ -348,7 +348,7 @@ router.post('/saveSignature', (req, res) => {
             },*/
             $addToSet:{
               proxyAppointed: req.body.meeting_id,
-              signature: fileLinks
+              signature: fileLinks[0]
             }
           }, {
           new: true
