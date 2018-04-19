@@ -317,7 +317,7 @@ router.post('/saveSignature', (req, res) => {
             var buf         = new Buffer(base64Data, 'base64');
               bucket.upload({
                 Body: buf,
-                Key: `${item.estate}/OwnersSignature/${item.account}/signature${key}.png`,
+                Key: `${item.estate}/OwnersSignature/${item.account}/signature${req.body.meeting_id}.png`,
                 ACL: 'public-read'
               }, function(err, data1) {
                 if (err) {
@@ -342,12 +342,13 @@ router.post('/saveSignature', (req, res) => {
       function update(req, res, fileLinks){
         console.log(req.body.meeting_id, "meeting_id", fileLinks)
         Resident.update({account: req.body.signatures[0].account},
-          {$set: 
+          {/*$set: 
             { 
               signature: fileLinks,
-            },
+            },*/
             $addToSet:{
-              proxyAppointed: req.body.meeting_id
+              proxyAppointed: req.body.meeting_id,
+              signature: fileLinks
             }
           }, {
           new: true
