@@ -310,6 +310,7 @@ router.post('/saveSignature', (req, res) => {
         forEach(req.body.signatures, function(item, key, a){
               promiseArr.push(new Promise(function(resolve, reject){
                 console.log(key, "key")
+              var fileName = req.body.meeting_id + "-" + key
             var originalBlob = item.image
             var regex       = /^data:.+\/(.+);base64,(.*)$/;
             var matches     = originalBlob.match(regex);
@@ -317,7 +318,7 @@ router.post('/saveSignature', (req, res) => {
             var buf         = new Buffer(base64Data, 'base64');
               bucket.upload({
                 Body: buf,
-                Key: `${item.estate}/OwnersSignature/${item.account}/${req.body.meeting_id}.png`,
+                Key: `${item.estate}/OwnersSignature/${item.account}/${fileName}.png`,
                 ACL: 'public-read'
               }, function(err, data1) {
                 if (err) {
