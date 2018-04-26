@@ -142,7 +142,6 @@ router.post('/login', (req, res) => {
           if(req.body.password !== user.password){
             res.json({success : false, message: "密碼不正確 | Wrong Password"});
           }else{
-              console.log(req.body);
               var userInfo = setUserInfo(user);
               var deviceToken = null;
               if(req.body.deviceToken){
@@ -372,16 +371,17 @@ router.post('/saveSignature', (req, res) => {
                   console.log(err)
                 }
                 if(data1) {
+                  console.log(data1,"jjjjjj")
                   avatarS3Url.push(data1.Location)
                   console.log(avatarS3Url, "avatarS3Url")
                   resolve(avatarS3Url)
                 }
               })
-          }))
+          })) 
        })
       Promise.all(promiseArr)
         .then(function(data, err){
-          console.log(data[0], "data")
+          console.log(data[0], "data[0]")
           update(req, res, data[0]);
         })
       }else {
@@ -396,7 +396,7 @@ router.post('/saveSignature', (req, res) => {
             },*/
             $addToSet:{
               proxyAppointed: req.body.meeting_id,
-              signature: fileLinks[0]
+              signature: { $each: fileLinks }
             }
           }, {
           new: true
