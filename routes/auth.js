@@ -12,9 +12,9 @@ const bcrypt   = require('bcrypt-nodejs');
 const BucketName = 'telospdf';
 var AWS = require('aws-sdk');
 AWS.config.update({
-  accessKeyId: 'AKIAIMLMZLII2XCKU6UA',
-  secretAccessKey: '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',
-  region: 'ap-southeast-1'
+    accessKeyId: process.env.AWS_accessKeyId,
+    secretAccessKey: process.env.AWS_secretAccessKey,
+    region: 'ap-southeast-1'
 });
 const bucket = new AWS.S3({params: {Bucket: BucketName}});
 function generateToken(user){
@@ -357,6 +357,7 @@ router.post('/saveSignature', (req, res) => {
         forEach(req.body.signatures, function(item, key, a){
               promiseArr.push(new Promise(function(resolve, reject){
                 console.log(key, "key")
+              var fileName = req.body.meeting_id + "--" + key
             var originalBlob = item.image
             var regex       = /^data:.+\/(.+);base64,(.*)$/;
             var matches     = originalBlob.match(regex);
@@ -364,7 +365,7 @@ router.post('/saveSignature', (req, res) => {
             var buf         = new Buffer(base64Data, 'base64');
               bucket.upload({
                 Body: buf,
-                Key: `${item.estate}/OwnersSignature/${item.account}/signature${key}.png`,
+                Key: `${item.estate}/OwnersSignature/${item.account}/${fileName}.png`,
                 ACL: 'public-read'
               }, function(err, data1) {
                 if (err) {
@@ -389,12 +390,13 @@ router.post('/saveSignature', (req, res) => {
       function update(req, res, fileLinks){
         console.log(req.body.meeting_id, "meeting_id", fileLinks)
         Resident.update({account: req.body.signatures[0].account},
-          {$set: 
+          {/*$set: 
             { 
               signature: fileLinks,
-            },
+            },*/
             $addToSet:{
-              proxyAppointed: req.body.meeting_id
+              proxyAppointed: req.body.meeting_id,
+              signature: fileLinks[0]
             }
           }, {
           new: true

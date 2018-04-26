@@ -2,8 +2,9 @@ const mongoose = require('mongoose');
 mongoose.Promise = global.Promise;
 const bcrypt   = require('bcrypt-nodejs');
 //const connect = process.env.MONGODB_URI || "mongodb://localhost:27017/telos";
+require('dotenv').config()
 
-const connect = process.env.MONGODB_URI ||"mongodb://upwork:upwork@ds117625.mlab.com:17625/telos"
+const connect = process.env.MONGODB_URI /*||"mongodb://upwork:upwork@ds117625.mlab.com:17625/telos"*/
 mongoose.connect(connect);
 
 const Schema = mongoose.Schema;
